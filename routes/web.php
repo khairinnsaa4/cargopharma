@@ -2,15 +2,18 @@
 
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\AuditLogController;
+use App\Http\Controllers\Web\CarrierController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ExceptionController;
+use App\Http\Controllers\Web\ExceptionPageController;
 use App\Http\Controllers\Web\ShipmentController;
 use App\Http\Controllers\Web\TrackingController;
+use App\Http\Controllers\Web\TrackingPageController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - CargoPharma (Global Cold-Chain Visibility Platform)
+| Web Routes - CargoTrace (Formal Enterprise Logistics Platform)
 |--------------------------------------------------------------------------
 */
 
@@ -26,23 +29,29 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Authenticated Application Routes
 Route::middleware('auth')->group(function () {
-    // Mission Control Dashboard
+    // 1. Dashboard (Overview)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Shipments
+    // 2. Shipments
     Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
     Route::get('/shipments/create', [ShipmentController::class, 'create'])->name('shipments.create');
     Route::post('/shipments', [ShipmentController::class, 'store'])->name('shipments.store');
     Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
     Route::patch('/shipments/{shipment}/status', [ShipmentController::class, 'updateStatus'])->name('shipments.status.update');
 
-    // Tracking Events
+    // 3. Tracking (Dedicated Map & Status Page)
+    Route::get('/tracking', [TrackingPageController::class, 'index'])->name('tracking.index');
     Route::post('/shipments/{shipment}/tracking', [TrackingController::class, 'store'])->name('tracking.store');
 
-    // Exception Management
+    // 4. Exceptions (Dedicated Incident Management Page)
+    Route::get('/exceptions', [ExceptionPageController::class, 'index'])->name('exceptions.index');
     Route::post('/shipments/{shipment}/exceptions', [ExceptionController::class, 'store'])->name('exceptions.store');
     Route::patch('/exceptions/{exception}/resolve', [ExceptionController::class, 'resolve'])->name('exceptions.resolve');
 
-    // Audit Logs (Admin only)
+    // 5. Carriers & Partners
+    Route::get('/carriers', [CarrierController::class, 'index'])->name('carriers.index');
+    Route::post('/carriers', [CarrierController::class, 'store'])->name('carriers.store');
+
+    // 6. Reports & Governance (Admin only)
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 });
