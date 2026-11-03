@@ -8,9 +8,9 @@ use App\Models\Location;
 use App\Models\Shipment;
 use App\Models\ShipmentItem;
 use App\Models\User;
+use App\Services\CurrencyApiService;
 use App\Services\ShipmentService;
 use App\Services\WeatherApiService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,12 +18,19 @@ use Illuminate\Support\Facades\DB;
 class ShipmentController extends Controller
 {
     protected ShipmentService $shipmentService;
+
     protected WeatherApiService $weatherService;
 
-    public function __construct(ShipmentService $shipmentService, WeatherApiService $weatherService)
-    {
+    protected CurrencyApiService $currencyService;
+
+    public function __construct(
+        ShipmentService $shipmentService,
+        WeatherApiService $weatherService,
+        CurrencyApiService $currencyService
+    ) {
         $this->shipmentService = $shipmentService;
         $this->weatherService = $weatherService;
+        $this->currencyService = $currencyService;
     }
 
     public function index(Request $request)
@@ -40,11 +47,11 @@ class ShipmentController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('shipment_number', 'like', "%{$search}%")
-                  ->orWhere('cargo_type', 'like', "%{$search}%")
-                  ->orWhereHas('items', function ($itemQ) use ($search) {
-                      $itemQ->where('batch_number', 'like', "%{$search}%")
+                    ->orWhere('cargo_type', 'like', "%{$search}%")
+                    ->orWhereHas('items', function ($itemQ) use ($search) {
+                        $itemQ->where('batch_number', 'like', "%{$search}%")
                             ->orWhere('product_name', 'like', "%{$search}%");
-                  });
+                    });
             });
         }
 
@@ -94,9 +101,27 @@ class ShipmentController extends Controller
         $latestEvent = $shipment->trackingEvents->last();
         $currentLat = $latestEvent?->recorded_lat ?? $shipment->origin->latitude;
         $currentLng = $latestEvent?->recorded_lng ?? $shipment->origin->longitude;
-        $weatherData = $this->weatherService->getWeatherByCoordinates((float)$currentLat, (float)$currentLng);
+        $weatherData = $this->weatherService->getWeatherByCoordinates((float) $currentLat, (float) $currentLng);
 
-        return view('shipments.show', compact('shipment', 'locations', 'carriers', 'weatherData', 'latestEvent'));
+        // Real-Time Currency Conversion for Customs & Cargo Insurance Valuation
+        $currencyRates = $this->currencyService->getRates();
+        $totalVials = $shipment->items->sum('quantity_vials') ?: 50000;
+        $unitPriceUsd = 8.50; // International benchmark per nOPV2 10-dose vial
+        $declaredUsd = $totalVials * $unitPriceUsd;
+        $declaredIdr = $this->currencyService->convert($declaredUsd, 'USD', 'IDR');
+        $declaredEur = $this->currencyService->convert($declaredUsd, 'USD', 'EUR');
+
+        return view('shipments.show', compact(
+            'shipment',
+            'locations',
+            'carriers',
+            'weatherData',
+            'latestEvent',
+            'currencyRates',
+            'declaredUsd',
+            'declaredIdr',
+            'declaredEur'
+        ));
     }
 
     public function create()
@@ -134,7 +159,7 @@ class ShipmentController extends Controller
             'expected_departure' => 'required|date',
             'expected_arrival' => 'required|date|after:expected_departure',
             'notes' => 'nullable|string',
-            
+
             // Items validation
             'item_code' => 'required|string',
             'product_name' => 'required|string',

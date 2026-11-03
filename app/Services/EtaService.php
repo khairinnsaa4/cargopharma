@@ -15,6 +15,7 @@ class EtaService
      * - >18 hours: HIGH / CRITICAL (Urgent risk of vaccine denaturation)
      */
     public const THRESHOLD_LOW_MAX = 6;
+
     public const THRESHOLD_MEDIUM_MAX = 18;
 
     /**

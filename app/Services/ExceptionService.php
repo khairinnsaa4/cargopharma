@@ -79,7 +79,7 @@ class ExceptionService
 
         AuditLog::create([
             'user_id' => $actor?->id,
-            'action' => 'EXCEPTION_' . $newStatus,
+            'action' => 'EXCEPTION_'.$newStatus,
             'entity_type' => 'ShipmentException',
             'entity_id' => $exception->id,
             'new_values' => [

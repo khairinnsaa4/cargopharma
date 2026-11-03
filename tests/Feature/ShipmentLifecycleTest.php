@@ -17,10 +17,15 @@ class ShipmentLifecycleTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $operator;
+
     protected User $customer;
+
     protected Carrier $carrier;
+
     protected Location $origin;
+
     protected Location $destination;
 
     protected function setUp(): void

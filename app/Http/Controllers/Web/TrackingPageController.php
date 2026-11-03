@@ -22,7 +22,7 @@ class TrackingPageController extends Controller
             $keyword = $request->q;
             $query->where(function ($q) use ($keyword) {
                 $q->where('shipment_number', 'like', "%{$keyword}%")
-                  ->orWhere('cargo_type', 'like', "%{$keyword}%");
+                    ->orWhere('cargo_type', 'like', "%{$keyword}%");
             });
         }
 

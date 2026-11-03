@@ -10,6 +10,7 @@ use Tests\TestCase;
 class AuthApiTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_api_login_returns_token_on_valid_credentials(): void
     {
         $user = User::firstOrCreate(
@@ -23,14 +24,14 @@ class AuthApiTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'status',
-                     'message',
-                     'data' => [
-                         'user',
-                         'token'
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'user',
+                    'token',
+                ],
+            ]);
     }
 
     public function test_api_login_fails_with_invalid_credentials(): void

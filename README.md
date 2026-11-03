@@ -4,7 +4,7 @@
 [![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![Tests](https://img.shields.io/badge/Tests-9%20Passed-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](#automated-testing)
+[![Tests](https://img.shields.io/badge/Tests-16%20Passed-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](#automated-testing)
 
 > **Web Programming 2 — Final Project (UAS)**  
 > *A high-reliability software portfolio engineering project adhering to enterprise cold-chain biopharmaceutical standards.*
@@ -100,6 +100,10 @@ All protected API endpoints require an `Authorization: Bearer <token>` header ob
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `POST` | `/api/login` | Authenticate and obtain personal API access token |
+| `GET` | `/api/currency-rates` | Live foreign currency rates (ECB / Frankfurter API) for freight valuation |
+| `GET` | `/api/geocode` | Real-time geospatial location search & coordinate auto-fill (OSM Nominatim) |
+| `GET` | `/api/news-feed` | Live biopharma & humanitarian logistics bulletins (UN OCHA ReliefWeb) |
+| `GET` | `/api/weather` | Real-time tarmac weather & heatwave telemetry (OpenWeatherMap API) |
 | `GET` | `/api/shipments` | List consignments with search, filter, and pagination |
 | `POST` | `/api/shipments` | Register new vaccine consignment (Operator/Admin) |
 | `GET` | `/api/shipments/{id}` | Inspect comprehensive consignment details and manifest |
@@ -116,7 +120,7 @@ All protected API endpoints require an `Authorization: Bearer <token>` header ob
 
 ## 🧪 Automated Testing Suite
 
-The application includes an automated feature test suite verifying lifecycle transitions, terminal locks, delay severity rules, and REST API authentication:
+The application includes an automated feature test suite verifying lifecycle transitions, terminal locks, delay severity rules, REST API authentication, and external API integrations:
 
 ```bash
 php artisan test
@@ -132,6 +136,16 @@ php artisan test
    PASS  Tests\Feature\EtaDelayTest
   ✓ eta delay calculation and severity thresholds
 
+   PASS  Tests\Feature\ExternalApisTest
+  ✓ currency rates api endpoint returns valid data
+  ✓ currency service can convert values
+  ✓ geocoding api endpoint searches locations
+  ✓ geocoding service returns cached fallback on empty
+  ✓ news feed api returns real time alerts
+  ✓ weather api returns real time telemetry
+  ✓ weather api validates coordinate bounds
+  ✓ dashboard renders with real time currency and news
+
    PASS  Tests\Feature\ShipmentLifecycleTest
   ✓ can advance status through valid lifecycle
   ✓ invalid status transition is rejected
@@ -140,8 +154,8 @@ php artisan test
    PASS  Tests\Feature\ExampleTest
   ✓ the application returns a successful response
 
-  Tests:    9 passed (30 assertions)
-  Duration: 0.70s
+  Tests:    16 passed (128 assertions)
+  Duration: 0.95s
 ```
 
 ---

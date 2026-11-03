@@ -7,17 +7,17 @@ use App\Models\Carrier;
 use App\Models\Location;
 use App\Models\Shipment;
 use App\Models\ShipmentException;
-use App\Models\ShipmentItem;
 use App\Services\ExceptionService;
 use App\Services\ShipmentService;
 use App\Services\TrackingService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ApiShipmentController extends Controller
 {
     protected ShipmentService $shipmentService;
+
     protected TrackingService $trackingService;
+
     protected ExceptionService $exceptionService;
 
     public function __construct(
@@ -96,7 +96,7 @@ class ApiShipmentController extends Controller
         $shipment = Shipment::with(['carrier', 'origin', 'destination', 'customer', 'items', 'trackingEvents', 'exceptions'])
             ->find($id);
 
-        if (!$shipment) {
+        if (! $shipment) {
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
@@ -118,7 +118,7 @@ class ApiShipmentController extends Controller
         }
 
         $shipment = Shipment::find($id);
-        if (!$shipment) {
+        if (! $shipment) {
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
@@ -143,12 +143,12 @@ class ApiShipmentController extends Controller
     public function destroy(Request $request, $id)
     {
         $user = $request->user();
-        if (!$user->isAdmin()) {
+        if (! $user->isAdmin()) {
             return response()->json(['status' => 'error', 'message' => 'Only administrators can delete shipments.'], 403);
         }
 
         $shipment = Shipment::find($id);
-        if (!$shipment) {
+        if (! $shipment) {
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
@@ -165,7 +165,7 @@ class ApiShipmentController extends Controller
     {
         $user = $request->user();
         $shipment = Shipment::find($id);
-        if (!$shipment) {
+        if (! $shipment) {
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
@@ -187,7 +187,7 @@ class ApiShipmentController extends Controller
         }
 
         $shipment = Shipment::find($id);
-        if (!$shipment) {
+        if (! $shipment) {
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
@@ -214,7 +214,7 @@ class ApiShipmentController extends Controller
     public function getExceptions(Request $request, $id)
     {
         $shipment = Shipment::find($id);
-        if (!$shipment) {
+        if (! $shipment) {
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
@@ -232,7 +232,7 @@ class ApiShipmentController extends Controller
         }
 
         $shipment = Shipment::find($id);
-        if (!$shipment) {
+        if (! $shipment) {
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
@@ -259,7 +259,7 @@ class ApiShipmentController extends Controller
         }
 
         $exception = ShipmentException::find($id);
-        if (!$exception) {
+        if (! $exception) {
             return response()->json(['status' => 'error', 'message' => 'Exception not found.'], 404);
         }
 
@@ -291,6 +291,7 @@ class ApiShipmentController extends Controller
             'transport_type' => 'required|string|in:air,land,sea',
         ]);
         $carrier = Carrier::create($validated);
+
         return response()->json(['status' => 'success', 'data' => $carrier], 201);
     }
 
@@ -311,6 +312,7 @@ class ApiShipmentController extends Controller
             'location_type' => 'required|string|in:facility,airport,transit_hub,cold_storage',
         ]);
         $location = Location::create($validated);
+
         return response()->json(['status' => 'success', 'data' => $location], 201);
     }
 }

@@ -85,8 +85,8 @@
         @endif
     </div>
 
-    <!-- 3 CORPORATE TELEMETRY TILES -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- 4 CORPORATE TELEMETRY TILES -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- 1. Cold-Chain Sensor Status -->
         <div class="p-4 rounded-xl bg-white border border-slate-200/90 shadow-xs">
             <div class="flex items-center justify-between text-xs text-slate-500 mb-1">
@@ -100,9 +100,9 @@
             @endphp
             <div class="flex items-baseline gap-2">
                 <span class="text-2xl font-bold font-mono text-slate-900">{{ number_format($currentTemp, 1) }}°C</span>
-                <span class="text-xs text-slate-500">Target Range: {{ $shipment->target_temp_min }}°C to {{ $shipment->target_temp_max }}°C</span>
+                <span class="text-xs text-slate-500">{{ $shipment->target_temp_min }}°C to {{ $shipment->target_temp_max }}°C</span>
             </div>
-            <div class="mt-2 text-xs text-slate-600">
+            <div class="mt-2 text-xs text-slate-600 truncate">
                 Unit: <span class="font-medium text-slate-800">{{ $shipment->items->first()->container_type ?? 'Envirotainer RKN e1' }}</span>
             </div>
         </div>
@@ -111,20 +111,20 @@
         <div class="p-4 rounded-xl bg-white border border-slate-200/90 shadow-xs">
             <div class="flex items-center justify-between text-xs text-slate-500 mb-1">
                 <span class="flex items-center gap-1 text-slate-700 font-medium">
-                    <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-blue-600"></i> OpenWeather Hub Reading
+                    <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-blue-600"></i> OpenWeather Hub
                 </span>
                 <span class="text-[11px] text-slate-400">Atmosphere</span>
             </div>
             <div class="flex items-baseline gap-2">
                 <span class="text-2xl font-bold font-mono text-slate-900">{{ number_format($weatherData['temp'], 1) }}°C</span>
-                <span class="text-xs text-slate-600">{{ $weatherData['condition'] }} • {{ $weatherData['city'] }}</span>
+                <span class="text-xs text-slate-600 truncate">{{ $weatherData['condition'] }} • {{ $weatherData['city'] }}</span>
             </div>
             <div class="mt-2 text-xs text-slate-600 flex items-center justify-between">
                 <span>Humidity: {{ $weatherData['humidity'] }}%</span>
                 @if($weatherData['is_extreme_heat'])
-                <span class="text-amber-700 font-semibold">Tarmac Heatwave Alert</span>
+                <span class="text-amber-700 font-semibold">Heatwave Alert</span>
                 @else
-                <span class="text-emerald-600 font-medium">Optimal Conditions</span>
+                <span class="text-emerald-600 font-medium">Optimal Status</span>
                 @endif
             </div>
         </div>
@@ -136,10 +136,27 @@
                 <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
             </div>
             <div class="text-base font-bold text-slate-900 font-mono">
-                ETA: {{ $shipment->expected_arrival->format('d M Y, H:i') }}
+                ETA: {{ $shipment->expected_arrival->format('d M Y') }}
             </div>
             <div class="mt-2 text-xs text-slate-600">
-                Departed: <span class="font-mono text-slate-800">{{ $shipment->expected_departure->format('d M Y, H:i') }}</span>
+                Departed: <span class="font-mono text-slate-800">{{ $shipment->expected_departure->format('d M, H:i') }}</span>
+            </div>
+        </div>
+
+        <!-- 4. Declared Valuation (Live ECB FX Rates) -->
+        <div class="p-4 rounded-xl bg-white border border-slate-200/90 shadow-xs">
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span class="flex items-center gap-1 text-slate-700 font-medium">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i> Cargo Insurance Value
+                </span>
+                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-600">Live ECB</span>
+            </div>
+            <div class="text-xl font-bold font-mono text-slate-900">
+                ${{ number_format($declaredUsd, 0) }} <span class="text-xs font-sans text-slate-500 font-normal">USD</span>
+            </div>
+            <div class="mt-2 text-xs text-slate-600 flex items-center justify-between font-mono">
+                <span class="text-emerald-700 font-semibold">Rp {{ number_format($declaredIdr / 1000000000, 2) }} Milyar</span>
+                <span class="text-slate-400">€{{ number_format($declaredEur, 0) }}</span>
             </div>
         </div>
     </div>
@@ -281,12 +298,36 @@
 
 <!-- MODAL CHECKPOINT -->
 <div id="modal-checkpoint" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-md bg-white rounded-xl p-6 shadow-xl space-y-4">
+    <div class="w-full max-w-lg bg-white rounded-xl p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 class="text-sm font-bold text-slate-900">Log Checkpoint Event</h3>
+            <div>
+                <h3 class="text-sm font-bold text-slate-900">Log Checkpoint Telemetry</h3>
+                <p class="text-[11px] text-slate-500">Append authenticated timeline checkpoint with live telemetry</p>
+            </div>
             <button onclick="document.getElementById('modal-checkpoint').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
+        </div>
+
+        <!-- LIVE OPENSTREETMAP GEOCODING SEARCH -->
+        <div class="p-3 rounded-lg bg-blue-50/70 border border-blue-200/80 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+                <label class="font-bold text-blue-950 flex items-center gap-1.5">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600"></i> OpenStreetMap Live Geocoding
+                </label>
+                <span class="text-[10px] font-mono font-semibold text-blue-700 bg-blue-100/70 px-1.5 py-0.5 rounded">Nominatim API</span>
+            </div>
+            <div class="flex gap-2">
+                <input type="text" id="geocode-search-input" placeholder="Search airport, seaport, or hub (e.g. Dubai Airport, Changi, Schiphol)..." 
+                    class="flex-1 p-2 rounded-lg border border-slate-200 bg-white text-slate-800 text-xs focus:outline-none focus:border-blue-500">
+                <button type="button" id="btn-geocode-search" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shrink-0 flex items-center gap-1">
+                    <i data-lucide="search" class="w-3.5 h-3.5"></i> Find
+                </button>
+            </div>
+            <div id="geocode-results" class="hidden space-y-1 max-h-36 overflow-y-auto border border-blue-200 rounded-lg p-1.5 bg-white text-xs"></div>
+            <div id="geocode-live-feedback" class="hidden text-[11px] text-emerald-700 font-medium flex items-center gap-1">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> <span id="geocode-feedback-text"></span>
+            </div>
         </div>
 
         <form method="POST" action="{{ route('tracking.store', $shipment->id) }}" class="space-y-3 text-xs">
@@ -302,13 +343,25 @@
             </div>
 
             <div>
-                <label class="block font-medium text-slate-700 mb-1">Location / Airport</label>
-                <select name="location_id" class="w-full p-2 rounded-lg border border-slate-200 text-slate-800">
-                    <option value="">Auto Location</option>
+                <label class="block font-medium text-slate-700 mb-1">Assigned Master Location (Optional)</label>
+                <select name="location_id" id="checkpoint-location-id" class="w-full p-2 rounded-lg border border-slate-200 text-slate-800">
+                    <option value="">Auto / Custom Geocoded Coordinates</option>
                     @foreach($locations as $loc)
-                    <option value="{{ $loc->id }}">{{ $loc->name }} ({{ $loc->city }})</option>
+                    <option value="{{ $loc->id }}" data-lat="{{ $loc->latitude }}" data-lng="{{ $loc->longitude }}">{{ $loc->name }} ({{ $loc->city }})</option>
                     @endforeach
                 </select>
+            </div>
+
+            <!-- GEODATA COORDINATES -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Recorded Latitude</label>
+                    <input type="text" name="recorded_lat" id="checkpoint-lat" placeholder="-6.8996" class="w-full p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 font-mono">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Recorded Longitude</label>
+                    <input type="text" name="recorded_lng" id="checkpoint-lng" placeholder="107.5997" class="w-full p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 font-mono">
+                </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
@@ -324,12 +377,12 @@
 
             <div>
                 <label class="block font-medium text-slate-700 mb-1">Status Headline *</label>
-                <input type="text" name="status_snapshot" required placeholder="e.g. Cleared transit holding area" class="w-full p-2 rounded-lg border border-slate-200 text-slate-800">
+                <input type="text" name="status_snapshot" id="checkpoint-headline" required placeholder="e.g. Cleared transit holding area at Dubai DXB" class="w-full p-2 rounded-lg border border-slate-200 text-slate-800">
             </div>
 
             <div>
                 <label class="block font-medium text-slate-700 mb-1">Observation Details</label>
-                <textarea name="description" rows="2" required placeholder="Seal condition, power endurance..." class="w-full p-2 rounded-lg border border-slate-200 text-slate-800"></textarea>
+                <textarea name="description" rows="2" required placeholder="Dry-ice level nominal, datalogger inspected..." class="w-full p-2 rounded-lg border border-slate-200 text-slate-800"></textarea>
             </div>
 
             <div class="pt-3 flex justify-end gap-2">
@@ -456,6 +509,159 @@
         }).addTo(map);
 
         map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+
+        // 4. Live Geocoding Search Handler (Nominatim API via /api/geocode)
+        const geocodeInput = document.getElementById('geocode-search-input');
+        const geocodeBtn = document.getElementById('btn-geocode-search');
+        const geocodeResults = document.getElementById('geocode-results');
+        const geocodeFeedback = document.getElementById('geocode-live-feedback');
+        const feedbackText = document.getElementById('geocode-feedback-text');
+        const latInput = document.getElementById('checkpoint-lat');
+        const lngInput = document.getElementById('checkpoint-lng');
+        const headlineInput = document.getElementById('checkpoint-headline');
+
+        if (geocodeBtn && geocodeInput) {
+            async function performGeocodeSearch() {
+                const query = geocodeInput.value.trim();
+                if (query.length < 2) {
+                    alert('Please enter at least 2 characters to search.');
+                    return;
+                }
+
+                geocodeBtn.disabled = true;
+                geocodeBtn.innerHTML = '<span class="animate-spin mr-1">⏳</span> Searching...';
+
+                try {
+                    const response = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`);
+                    const json = await response.json();
+
+                    geocodeResults.innerHTML = '';
+                    if (json.success && json.data.length > 0) {
+                        geocodeResults.classList.remove('hidden');
+                        json.data.forEach(item => {
+                            const opt = document.createElement('div');
+                            opt.className = 'p-2 hover:bg-blue-50 cursor-pointer rounded transition-colors text-slate-800 border-b border-slate-100 last:border-0';
+                            opt.innerHTML = `
+                                <div class="font-bold text-slate-900">${item.name}</div>
+                                <div class="text-[11px] text-slate-500 truncate">${item.display_name}</div>
+                                <div class="text-[10px] font-mono text-blue-600">GPS: ${item.lat}, ${item.lng} (${item.source})</div>
+                            `;
+                            opt.addEventListener('click', () => {
+                                latInput.value = item.lat;
+                                lngInput.value = item.lng;
+                                headlineInput.value = `Transit Checkpoint at ${item.name}`;
+                                geocodeResults.classList.add('hidden');
+                                geocodeFeedback.classList.remove('hidden');
+                                feedbackText.textContent = `Coordinates locked: ${item.name} (${item.lat}, ${item.lng})`;
+                            });
+                            geocodeResults.appendChild(opt);
+                        });
+                    } else {
+                        geocodeResults.classList.remove('hidden');
+                        geocodeResults.innerHTML = '<div class="p-2 text-slate-500 text-center">No location coordinates found.</div>';
+                    }
+                } catch (err) {
+                    console.error('Geocode search failed:', err);
+                    alert('Geocode request failed. Please check your network.');
+                } finally {
+                    geocodeBtn.disabled = false;
+                    geocodeBtn.innerHTML = '<i data-lucide="search" class="w-3.5 h-3.5"></i> Find';
+                    if (window.lucide) lucide.createIcons();
+                }
+            }
+
+            geocodeBtn.addEventListener('click', performGeocodeSearch);
+            geocodeInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performGeocodeSearch();
+                }
+            });
+        }
+
+        // Live Geocoding Handler (OpenStreetMap Nominatim)
+        const geocodeInput = document.getElementById('geocode-search-input');
+        const btnGeocode = document.getElementById('btn-geocode-search');
+        const geocodeResults = document.getElementById('geocode-results');
+        const feedbackDiv = document.getElementById('geocode-live-feedback');
+        const feedbackText = document.getElementById('geocode-feedback-text');
+
+        if (btnGeocode && geocodeInput) {
+            const doGeocode = function () {
+                const q = geocodeInput.value.trim();
+                if (q.length < 2) return;
+
+                btnGeocode.disabled = true;
+                btnGeocode.innerHTML = '<span class="animate-spin text-xs">⌛</span>';
+
+                fetch('{{ route("ajax.geocode") }}?q=' + encodeURIComponent(q))
+                    .then(res => res.json())
+                    .then(data => {
+                        btnGeocode.disabled = false;
+                        btnGeocode.innerHTML = '<i data-lucide="search" class="w-3.5 h-3.5"></i> Find';
+                        if (window.lucide) lucide.createIcons();
+
+                        if (data.success && data.data && data.data.length > 0) {
+                            geocodeResults.innerHTML = '';
+                            geocodeResults.classList.remove('hidden');
+
+                            data.data.forEach(item => {
+                                const row = document.createElement('div');
+                                row.className = 'p-2 hover:bg-blue-50 rounded-lg cursor-pointer border-b border-slate-100 last:border-b-0 flex items-start justify-between gap-2';
+                                row.innerHTML = `
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-slate-900">${item.name}</div>
+                                        <div class="text-[10px] text-slate-400 truncate max-w-xs">${item.display_name}</div>
+                                    </div>
+                                    <span class="text-[10px] font-mono font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded shrink-0">
+                                        ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}
+                                    </span>
+                                `;
+                                row.addEventListener('click', function () {
+                                    document.getElementById('checkpoint-lat').value = item.lat;
+                                    document.getElementById('checkpoint-lng').value = item.lng;
+                                    document.getElementById('checkpoint-headline').value = 'Checkpoint verified at ' + item.name;
+                                    geocodeResults.classList.add('hidden');
+                                    feedbackDiv.classList.remove('hidden');
+                                    feedbackText.textContent = `Applied GPS: ${item.name} (${item.lat.toFixed(4)}, ${item.lng.toFixed(4)})`;
+                                });
+                                geocodeResults.appendChild(row);
+                            });
+                        } else {
+                            geocodeResults.innerHTML = '<div class="p-2 text-slate-400 text-center text-xs">No coordinates found for query.</div>';
+                            geocodeResults.classList.remove('hidden');
+                        }
+                    })
+                    .catch(err => {
+                        btnGeocode.disabled = false;
+                        btnGeocode.innerHTML = 'Find';
+                        console.error('Geocoding error:', err);
+                    });
+            };
+
+            btnGeocode.addEventListener('click', doGeocode);
+            geocodeInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    doGeocode();
+                }
+            });
+        }
+
+        // Location dropdown auto-fill
+        const locSelect = document.getElementById('checkpoint-location-id');
+        if (locSelect) {
+            locSelect.addEventListener('change', function () {
+                const opt = this.options[this.selectedIndex];
+                const lat = opt.getAttribute('data-lat');
+                const lng = opt.getAttribute('data-lng');
+                if (lat && lng) {
+                    document.getElementById('checkpoint-lat').value = lat;
+                    document.getElementById('checkpoint-lng').value = lng;
+                    document.getElementById('checkpoint-headline').value = 'Checkpoint verified at ' + opt.text;
+                }
+            });
+        }
     });
 </script>
 @endpush

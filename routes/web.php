@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Api\ApiExternalServiceController;
 use App\Http\Controllers\Web\AuditLogController;
+use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CarrierController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ExceptionController;
@@ -54,4 +55,9 @@ Route::middleware('auth')->group(function () {
 
     // 6. Reports & Governance (Admin only)
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+    // 7. Live External Services (AJAX Helpers)
+    Route::get('/ajax/geocode', [ApiExternalServiceController::class, 'getGeocode'])->name('ajax.geocode');
+    Route::get('/ajax/weather', [ApiExternalServiceController::class, 'getWeather'])->name('ajax.weather');
+    Route::get('/ajax/currency-rates', [ApiExternalServiceController::class, 'getCurrencyRates'])->name('ajax.currency');
 });

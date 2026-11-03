@@ -46,15 +46,15 @@ class ShipmentService
 
         if ($currentStatus === 'CANCELLED') {
             throw ValidationException::withMessages([
-                'status' => ["Cancelled shipments cannot be reactivated."],
+                'status' => ['Cancelled shipments cannot be reactivated.'],
             ]);
         }
 
         // Validate valid forward transition
         $validTargets = $this->allowedTransitions[$currentStatus] ?? [];
-        if (!in_array($newStatus, $validTargets, true)) {
+        if (! in_array($newStatus, $validTargets, true)) {
             throw ValidationException::withMessages([
-                'status' => ["Invalid status transition from '{$currentStatus}' to '{$newStatus}'. Allowed: " . implode(', ', $validTargets)],
+                'status' => ["Invalid status transition from '{$currentStatus}' to '{$newStatus}'. Allowed: ".implode(', ', $validTargets)],
             ]);
         }
 

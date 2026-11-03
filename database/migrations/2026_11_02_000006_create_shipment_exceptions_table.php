@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('shipment_id')->constrained('shipments')->cascadeOnDelete();
             $table->foreignId('tracking_event_id')->nullable()->constrained('tracking_events')->nullOnDelete();
-            
+
             $table->enum('exception_type', [
                 'TEMPERATURE_BREACH',
                 'CUSTOMS_HOLD',
@@ -20,18 +20,18 @@ return new class extends Migration
                 'PORT_CONGESTION',
                 'DAMAGED',
                 'DOCUMENTATION_ISSUE',
-                'MISROUTED'
+                'MISROUTED',
             ])->index();
-            
+
             $table->enum('severity', ['LOW', 'MEDIUM', 'HIGH'])->default('MEDIUM');
             $table->enum('status', ['OPEN', 'INVESTIGATING', 'RESOLVED'])->default('OPEN')->index();
-            
+
             $table->dateTime('detected_at');
             $table->dateTime('resolved_at')->nullable();
-            
+
             $table->text('root_cause')->nullable();
             $table->text('resolution_notes')->nullable();
-            
+
             $table->foreignId('resolved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });

@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 class TrackingService
 {
     protected WeatherApiService $weatherService;
+
     protected EtaService $etaService;
 
     public function __construct(WeatherApiService $weatherService, EtaService $etaService)
@@ -41,7 +42,7 @@ class TrackingService
         $lng = $data['recorded_lng'] ?? null;
         $location = null;
 
-        if (!empty($data['location_id'])) {
+        if (! empty($data['location_id'])) {
             $location = Location::find($data['location_id']);
             if ($location) {
                 $lat = $lat ?? $location->latitude;
@@ -52,18 +53,18 @@ class TrackingService
         // Live Weather API query if coordinates are available
         $ambientTemp = $data['ambient_temperature'] ?? null;
         if ($ambientTemp === null && $lat !== null && $lng !== null) {
-            $weather = $this->weatherService->getWeatherByCoordinates((float)$lat, (float)$lng);
+            $weather = $this->weatherService->getWeatherByCoordinates((float) $lat, (float) $lng);
             $ambientTemp = $weather['temp'] ?? null;
         }
 
-        $containerTemp = isset($data['container_temperature']) ? (float)$data['container_temperature'] : null;
+        $containerTemp = isset($data['container_temperature']) ? (float) $data['container_temperature'] : null;
 
         // Create append-only event
         $event = TrackingEvent::create([
             'shipment_id' => $shipment->id,
             'location_id' => $data['location_id'] ?? null,
             'event_type' => $data['event_type'] ?? 'IN_TRANSIT',
-            'status_snapshot' => $data['status_snapshot'] ?? "Checkpoint logged at " . ($location?->name ?? 'transit path'),
+            'status_snapshot' => $data['status_snapshot'] ?? 'Checkpoint logged at '.($location?->name ?? 'transit path'),
             'event_time' => $eventTime,
             'recorded_lat' => $lat,
             'recorded_lng' => $lng,

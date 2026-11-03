@@ -1,18 +1,25 @@
 <?php
 
 use App\Http\Controllers\Api\ApiAuthController;
+use App\Http\Controllers\Api\ApiExternalServiceController;
 use App\Http\Controllers\Api\ApiShipmentController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| CargoPharma REST API Routes (UAS Web Programming 2 - Slide 12 & 13)
+| CargoPharma REST API Routes (UAS Web Programming 2 - Slide 12, 13 & 14)
 |--------------------------------------------------------------------------
 */
 
-// Public Authentication Endpoints
+// Public Authentication & Live Telemetry Feeds
 Route::post('/register', [ApiAuthController::class, 'register']);
 Route::post('/login', [ApiAuthController::class, 'login']);
+
+// Real-Time External Services (Public / Partner Accessible)
+Route::get('/currency-rates', [ApiExternalServiceController::class, 'getCurrencyRates']);
+Route::get('/geocode', [ApiExternalServiceController::class, 'getGeocode']);
+Route::get('/news-feed', [ApiExternalServiceController::class, 'getNewsFeed']);
+Route::get('/weather', [ApiExternalServiceController::class, 'getWeather']);
 
 // Protected API Endpoints (Requires Sanctum Bearer Token)
 Route::middleware('auth:sanctum')->group(function () {

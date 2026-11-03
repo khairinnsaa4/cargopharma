@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 class WeatherApiService
 {
     protected ?string $apiKey;
+
     protected string $baseUrl;
 
     public function __construct()
@@ -36,6 +37,7 @@ class WeatherApiService
 
             if ($response->successful()) {
                 $data = $response->json();
+
                 return [
                     'source' => 'LIVE_API',
                     'city' => $data['name'] ?? 'Unknown Location',
@@ -50,9 +52,11 @@ class WeatherApiService
             }
 
             Log::warning("OpenWeather API failed with status {$response->status()}: {$response->body()}");
-            return $this->getSimulatedWeatherData($lat, $lon, 'Live API Error ' . $response->status());
+
+            return $this->getSimulatedWeatherData($lat, $lon, 'Live API Error '.$response->status());
         } catch (\Throwable $e) {
             Log::error("Weather API Connection Exception: {$e->getMessage()}");
+
             return $this->getSimulatedWeatherData($lat, $lon, 'Network Timeout/Exception');
         }
     }

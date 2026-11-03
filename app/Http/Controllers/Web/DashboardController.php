@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Carrier;
 use App\Models\Shipment;
 use App\Models\ShipmentException;
-use Illuminate\Http\Request;
+use App\Services\CurrencyApiService;
+use App\Services\NewsFeedService;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(CurrencyApiService $currencyService, NewsFeedService $newsService)
     {
         $user = Auth::user();
         $isCustomer = $user->isCustomer();
@@ -26,7 +27,7 @@ class DashboardController extends Controller
         $inTransitCount = (clone $baseQuery)->where('current_status', 'IN_TRANSIT')->count();
         $deliveredCount = (clone $baseQuery)->where('current_status', 'DELIVERED')->count();
         $delayedCount = (clone $baseQuery)->where('is_delayed', true)->count();
-        
+
         $exceptionsQuery = ShipmentException::where('status', '!=', 'RESOLVED');
         if ($isCustomer) {
             $exceptionsQuery->whereHas('shipment', function ($q) use ($user) {
@@ -77,8 +78,8 @@ class DashboardController extends Controller
         foreach ($activeShipments as $s) {
             $mapRoutes[] = [
                 'number' => $s->shipment_number,
-                'origin' => ['name' => $s->origin->name, 'lat' => (float)$s->origin->latitude, 'lng' => (float)$s->origin->longitude],
-                'destination' => ['name' => $s->destination->name, 'lat' => (float)$s->destination->latitude, 'lng' => (float)$s->destination->longitude],
+                'origin' => ['name' => $s->origin->name, 'lat' => (float) $s->origin->latitude, 'lng' => (float) $s->origin->longitude],
+                'destination' => ['name' => $s->destination->name, 'lat' => (float) $s->destination->latitude, 'lng' => (float) $s->destination->longitude],
                 'status' => $s->current_status,
                 'is_delayed' => $s->is_delayed,
             ];
@@ -90,6 +91,10 @@ class DashboardController extends Controller
             ->latest()
             ->take(8)
             ->get();
+
+        // 5. Real-Time External Feeds (Currency & Cold-Chain News)
+        $currencyData = $currencyService->getRates();
+        $advisories = $newsService->getAdvisories();
 
         return view('dashboard.index', compact(
             'totalShipments',
@@ -103,6 +108,8 @@ class DashboardController extends Controller
             'carrierChartData',
             'mapRoutes',
             'recentShipments',
+            'currencyData',
+            'advisories',
             'user'
         ));
     }

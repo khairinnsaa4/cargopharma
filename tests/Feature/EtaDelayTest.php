@@ -14,6 +14,7 @@ use Tests\TestCase;
 class EtaDelayTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_eta_delay_calculation_and_severity_thresholds(): void
     {
         $customer = User::create([
