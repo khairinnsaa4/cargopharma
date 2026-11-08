@@ -11,7 +11,7 @@
         </div>
 
         @if(Auth::user()->isAdmin())
-        <button onclick="document.getElementById('modal-add-carrier').classList.remove('hidden')" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm">
+        <button onclick="document.getElementById('modal-add-carrier').classList.remove('hidden')" class="px-3.5 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs">
             <i data-lucide="plus" class="w-4 h-4"></i> Add Carrier
         </button>
         @endif
@@ -23,7 +23,7 @@
         <div class="p-5 rounded-xl bg-white border border-slate-200/90 shadow-xs space-y-4">
             <div class="flex items-start justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 border border-teal-100">
                         <i data-lucide="{{ $carrier->transport_type === 'air' ? 'plane' : ($carrier->transport_type === 'sea' ? 'ship' : 'truck') }}" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -43,7 +43,7 @@
                 </div>
                 <div>
                     <span class="text-slate-400 text-[10px] block">In Transit</span>
-                    <span class="font-bold text-blue-600">{{ $carrier->active_shipments_count ?? 0 }}</span>
+                    <span class="font-bold text-teal-700">{{ $carrier->active_shipments_count ?? 0 }}</span>
                 </div>
                 <div>
                     <span class="text-slate-400 text-[10px] block">Delayed</span>
@@ -98,7 +98,7 @@
 
             <div class="pt-3 flex justify-end gap-2">
                 <button type="button" onclick="document.getElementById('modal-add-carrier').classList.add('hidden')" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium">Cancel</button>
-                <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold">Save Carrier</button>
+                <button type="submit" class="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold shadow-xs">Save Carrier</button>
             </div>
         </form>
     </div>

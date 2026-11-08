@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\CarrierController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ExceptionController;
 use App\Http\Controllers\Web\ExceptionPageController;
+use App\Http\Controllers\Web\GlobalRadarController;
 use App\Http\Controllers\Web\ShipmentController;
 use App\Http\Controllers\Web\TrackingController;
 use App\Http\Controllers\Web\TrackingPageController;
@@ -43,6 +44,9 @@ Route::middleware('auth')->group(function () {
     // 3. Tracking (Dedicated Map & Status Page)
     Route::get('/tracking', [TrackingPageController::class, 'index'])->name('tracking.index');
     Route::post('/shipments/{shipment}/tracking', [TrackingController::class, 'store'])->name('tracking.store');
+
+    // 4. Global Radar (Mata Uang, Berita Antar Benua, & Peta Cuaca Dunia)
+    Route::get('/global-radar', [GlobalRadarController::class, 'index'])->name('global-radar.index');
 
     // 4. Exceptions (Dedicated Incident Management Page)
     Route::get('/exceptions', [ExceptionPageController::class, 'index'])->name('exceptions.index');

@@ -12,6 +12,10 @@ class CarrierController extends Controller
     public function index()
     {
         $user = Auth::user();
+        if ($user->isCustomer()) {
+            abort(403, 'Unauthorized access: Freight carrier fleet management is restricted to Bio Farma logistics personnel.');
+        }
+
         $carriers = Carrier::withCount(['shipments', 'shipments as active_shipments_count' => function ($q) {
             $q->where('current_status', 'IN_TRANSIT');
         }, 'shipments as delayed_shipments_count' => function ($q) {

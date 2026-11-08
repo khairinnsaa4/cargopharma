@@ -69,7 +69,7 @@
                         <td class="py-3.5 px-4 font-semibold text-slate-900">
                             {{ str_replace('_', ' ', $exc->exception_type) }}
                         </td>
-                        <td class="py-3.5 px-4 font-mono font-medium text-blue-600">
+                        <td class="py-3.5 px-4 font-mono font-medium text-teal-700">
                             <a href="{{ route('shipments.show', $exc->shipment_id) }}" class="hover:underline">
                                 {{ $exc->shipment->shipment_number }}
                             </a>
@@ -95,7 +95,7 @@
                             @endif
                         </td>
                         <td class="py-3.5 px-4 text-right">
-                            <a href="{{ route('shipments.show', $exc->shipment_id) }}" class="text-blue-600 hover:text-blue-800 font-semibold hover:underline">
+                            <a href="{{ route('shipments.show', $exc->shipment_id) }}" class="text-teal-700 hover:text-teal-900 font-semibold hover:underline">
                                 Resolve →
                             </a>
                         </td>

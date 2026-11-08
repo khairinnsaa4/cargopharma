@@ -39,7 +39,7 @@
                             {{ $log->user->name ?? 'System Automated' }}
                         </td>
                         <td class="py-3.5 px-4">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
                                 {{ $log->action }}
                             </span>
                         </td>

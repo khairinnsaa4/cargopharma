@@ -11,9 +11,9 @@
         </div>
         <div class="flex items-center gap-2">
             @if(Auth::user()->isAdmin() || Auth::user()->isOperator())
-            <a href="{{ route('shipments.create') }}" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm transition-all">
+            <a href="{{ route('shipments.create') }}" class="px-3.5 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-all">
                 <i data-lucide="plus" class="w-4 h-4"></i>
-                <span>New Shipment</span>
+                <span>New Consignment</span>
             </a>
             @endif
         </div>
@@ -49,7 +49,7 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <!-- 1. Total Shipments -->
         <div class="p-4 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-3">
-            <div class="w-11 h-11 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+            <div class="w-11 h-11 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 border border-teal-100">
                 <i data-lucide="package" class="w-5 h-5"></i>
             </div>
             <div>
@@ -60,7 +60,7 @@
 
         <!-- 2. In Transit -->
         <div class="p-4 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-3">
-            <div class="w-11 h-11 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+            <div class="w-11 h-11 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 border border-teal-100">
                 <i data-lucide="truck" class="w-5 h-5"></i>
             </div>
             <div>
@@ -123,25 +123,41 @@
             </div>
         </div>
 
-        <!-- Card 2: Delay Rate by Carrier (Donut Chart) -->
-        <div class="p-5 rounded-xl bg-white border border-slate-200/90 shadow-xs space-y-4">
+        <!-- Card 2: Delay Rate / Cold-Chain Integrity (Donut Chart) -->
+        <div class="p-5 rounded-xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between space-y-3">
             <div>
-                <h3 class="text-sm font-bold text-slate-900">Delay Rate by Carrier</h3>
-                <p class="text-xs text-slate-500">Distribution of delay occurrences across carrier partners</p>
+                <h3 class="text-sm font-bold text-slate-900">{{ $carrierChartTitle }}</h3>
+                <p class="text-xs text-slate-500">{{ $carrierChartSubtitle }}</p>
             </div>
 
-            <div class="h-44 relative flex items-center justify-center">
+            <!-- Centered Donut Canvas with Dead-Center Metric -->
+            <div class="h-36 relative flex items-center justify-center my-0.5">
                 <canvas id="carrierDonutChart"></canvas>
-                <!-- Center % metric -->
-                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span class="text-lg font-black text-slate-900">{{ $averageDelayRate }}%</span>
-                    <span class="text-[9px] text-slate-400 font-medium">Avg Delay</span>
+                <!-- Center % metric inside the donut hole -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                    <span class="text-xl font-black text-slate-900 leading-tight">{{ $carrierMetricValue }}</span>
+                    <span class="text-[9px] text-slate-400 font-semibold tracking-wider uppercase">{{ $carrierMetricLabel }}</span>
                 </div>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 text-xs text-slate-500 flex items-center justify-between">
-                <span>Compliance Benchmark:</span>
-                <span class="text-emerald-600 font-semibold font-mono">&lt; 15% Safe</span>
+            <!-- Structured HTML Legend: Zero clipping, zero overlap -->
+            <div class="pt-2.5 border-t border-slate-100 space-y-2">
+                <div class="space-y-1.5 text-[11px]">
+                    @foreach($carrierLegendItems as $item)
+                    <div class="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-50 border border-slate-100">
+                        <span class="flex items-center gap-2 truncate">
+                            <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-2xs" style="background-color: {{ $item['color'] }}"></span>
+                            <span class="text-slate-700 font-medium truncate" title="{{ $item['label'] }}">{{ $item['label'] }}</span>
+                        </span>
+                        <span class="font-mono font-bold text-slate-900 ml-2 shrink-0">{{ $item['value'] }}</span>
+                    </div>
+                    @endforeach
+                </div>
+
+                <div class="pt-1 flex items-center justify-between text-xs text-slate-500">
+                    <span>Benchmark:</span>
+                    {!! $carrierBenchmark !!}
+                </div>
             </div>
         </div>
 
@@ -152,7 +168,7 @@
                     <h3 class="text-sm font-bold text-slate-900">Shipment Map</h3>
                     <p class="text-xs text-slate-500">Real-time corridor routes & checkpoints</p>
                 </div>
-                <a href="{{ route('tracking.index') }}" class="text-xs text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1">
+                <a href="{{ route('tracking.index') }}" class="text-xs text-teal-700 hover:text-teal-900 font-semibold flex items-center gap-1">
                     <span>Full Map</span>
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
@@ -244,7 +260,7 @@
                                     DELIVERED
                                 </span>
                             @elseif($shipment->current_status === 'IN_TRANSIT')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-blue-600 text-white shadow-xs">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-teal-600 text-white shadow-xs">
                                     IN TRANSIT
                                 </span>
                             @else
@@ -256,7 +272,7 @@
 
                         <!-- Action -->
                         <td class="py-3.5 px-4 text-right">
-                            <a href="{{ route('shipments.show', $shipment->id) }}" class="text-blue-600 hover:text-blue-800 font-semibold hover:underline">
+                            <a href="{{ route('shipments.show', $shipment->id) }}" class="text-teal-700 hover:text-teal-900 font-semibold hover:underline">
                                 View Details
                             </a>
                         </td>
@@ -273,47 +289,33 @@
         </div>
     </div>
 
-    <!-- 4. REAL-TIME LOGISTICS & COLD-CHAIN ADVISORIES (ReliefWeb / WHO Bulletins) -->
-    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs overflow-hidden">
-        <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                    <i data-lucide="radio" class="w-4 h-4"></i>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-slate-900">Live Global Logistics &amp; Health Advisories</h3>
-                    <p class="text-xs text-slate-500">Real-time alerts, WHO vaccine distribution notices, and airport hub bulletins</p>
-                </div>
+    <!-- 4. GLOBAL BIOPHARMA LOGISTICS RADAR SUMMARY -->
+    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-200 shrink-0">
+                <i data-lucide="globe-2" class="w-6 h-6"></i>
             </div>
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live Telemetry Feed
-            </span>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h3 class="text-sm font-bold text-slate-900">Global Biopharma Logistics Radar</h3>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200">
+                        Live FX Rates
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        Live Satellite Wx
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    Live Global Logistics &amp; Advisories, konversi valuta asing real-time (bebas pilih negara), dan peta radar cuaca bandara dunia.
+                </p>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-            @foreach($advisories as $advisory)
-            <div class="p-5 space-y-2 hover:bg-slate-50/50 transition-colors">
-                <div class="flex items-center justify-between gap-2">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border {{ $advisory['badge_color'] }}">
-                        {{ $advisory['category'] }}
-                    </span>
-                    <span class="text-[11px] font-mono text-slate-400">{{ $advisory['date'] }}</span>
-                </div>
-                <h4 class="text-xs font-bold text-slate-900 leading-snug">
-                    {{ $advisory['title'] }}
-                </h4>
-                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                    {{ $advisory['summary'] }}
-                </p>
-                <div class="pt-1 flex items-center justify-between text-[11px]">
-                    <span class="text-slate-400 font-medium">Source: <strong class="text-slate-700">{{ $advisory['source'] }}</strong></span>
-                    <a href="{{ $advisory['url'] }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1">
-                        <span>Read Notice</span>
-                        <i data-lucide="external-link" class="w-3 h-3"></i>
-                    </a>
-                </div>
-            </div>
-            @endforeach
+        <div class="flex items-center gap-3 shrink-0">
+            <a href="{{ route('global-radar.index') }}" class="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs shadow-xs transition-all flex items-center gap-1.5">
+                <span>Buka Global Radar</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
         </div>
     </div>
 
@@ -339,7 +341,7 @@
                         barData.exceptions || 0
                     ],
                     backgroundColor: [
-                        '#0284c7', // Sky blue
+                        '#0d9488', // Medical Teal
                         '#10b981', // Emerald green
                         '#f59e0b', // Amber
                         '#ef4444'  // Rose red
@@ -359,10 +361,11 @@
             }
         });
 
-        // 2. Delay Rate by Carrier (Donut Chart)
+        // 2. Delay Rate / Cold-Chain Integrity (Donut Chart)
         const donutCtx = document.getElementById('carrierDonutChart').getContext('2d');
         const carrierLabels = @json($carrierChartLabels);
         const carrierData = @json($carrierChartData);
+        const carrierColors = @json($carrierChartColors);
 
         new Chart(donutCtx, {
             type: 'doughnut',
@@ -370,7 +373,7 @@
                 labels: carrierLabels,
                 datasets: [{
                     data: carrierData,
-                    backgroundColor: ['#0284c7', '#f97316', '#64748b', '#8b5cf6'],
+                    backgroundColor: carrierColors,
                     borderWidth: 2,
                     borderColor: '#ffffff',
                     hoverOffset: 3
@@ -379,11 +382,17 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '74%',
+                cutout: '70%',
                 plugins: {
                     legend: {
-                        position: 'right',
-                        labels: { boxWidth: 10, font: { size: 10, family: 'Inter' }, padding: 8 }
+                        display: false // Turned off so donut stays dead-centered!
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.label + ': ' + context.raw + '%';
+                            }
+                        }
                     }
                 }
             }
@@ -396,8 +405,9 @@
             attributionControl: false
         }).setView([-6.89, 107.59], 2);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            maxZoom: 18
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap'
         }).addTo(miniMap);
 
         const latLngs = [];
@@ -406,15 +416,15 @@
             const destPt = [r.destination.lat, r.destination.lng];
             latLngs.push(originPt, destPt);
 
-            // Add simple circular markers
-            L.circleMarker(originPt, { radius: 5, color: '#0284c7', fillColor: '#0284c7', fillOpacity: 1 }).addTo(miniMap);
+            // Add clinical circular markers
+            L.circleMarker(originPt, { radius: 5, color: '#0f766e', fillColor: '#0f766e', fillOpacity: 1 }).addTo(miniMap);
             L.circleMarker(destPt, { radius: 5, color: '#10b981', fillColor: '#10b981', fillOpacity: 1 }).addTo(miniMap);
 
             // Draw line
             L.polyline([originPt, destPt], {
-                color: r.is_delayed ? '#f59e0b' : '#0284c7',
+                color: r.is_delayed ? '#f59e0b' : '#0d9488',
                 weight: 2,
-                opacity: 0.7,
+                opacity: 0.8,
                 dashArray: '4, 4'
             }).addTo(miniMap);
         });

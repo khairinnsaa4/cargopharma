@@ -33,7 +33,7 @@ class GeocodingService
         return Cache::remember($cacheKey, 86400, function () use ($cleanQuery): array {
             try {
                 $response = Http::withHeaders([
-                    'User-Agent' => 'CargoTrace-PharmaLogistics/1.0 (contact: info@cargotrace.com)',
+                    'User-Agent' => 'CargoPharma-Logistics/1.0 (contact: info@cargopharma.com)',
                     'Accept' => 'application/json',
                 ])
                     ->timeout(4)

@@ -12,7 +12,7 @@
 
         @if(Auth::user()->isAdmin() || Auth::user()->isOperator())
         <div>
-            <a href="{{ route('shipments.create') }}" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm transition-all">
+            <a href="{{ route('shipments.create') }}" class="px-3.5 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-all">
                 <i data-lucide="plus" class="w-4 h-4"></i>
                 <span>Create Shipment</span>
             </a>
@@ -29,14 +29,14 @@
                 <div class="relative">
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. CT-BIO-2024-001 or Polio Vaccine" 
-                        class="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 font-mono">
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-600 font-mono">
                 </div>
             </div>
 
             <!-- Status Filter -->
             <div>
                 <label class="block font-medium text-slate-700 mb-1">Status</label>
-                <select name="status" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-blue-500">
+                <select name="status" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-teal-600">
                     <option value="">All Statuses</option>
                     @foreach(['CREATED', 'BOOKED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED'] as $st)
                         <option value="{{ $st }}" {{ request('status') === $st ? 'selected' : '' }}>{{ $st }}</option>
@@ -47,7 +47,7 @@
             <!-- Carrier Filter -->
             <div>
                 <label class="block font-medium text-slate-700 mb-1">Carrier</label>
-                <select name="carrier_id" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-blue-500">
+                <select name="carrier_id" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:border-teal-600">
                     <option value="">All Carriers</option>
                     @foreach($carriers as $carrier)
                         <option value="{{ $carrier->id }}" {{ request('carrier_id') == $carrier->id ? 'selected' : '' }}>{{ $carrier->name }}</option>
@@ -115,7 +115,7 @@
                                     DELIVERED
                                 </span>
                             @elseif($shipment->current_status === 'IN_TRANSIT')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-blue-600 text-white">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-teal-600 text-white">
                                     IN TRANSIT
                                 </span>
                             @else
@@ -125,7 +125,7 @@
                             @endif
                         </td>
                         <td class="py-3.5 px-4 text-right">
-                            <a href="{{ route('shipments.show', $shipment->id) }}" class="text-blue-600 hover:text-blue-800 font-semibold hover:underline">
+                            <a href="{{ route('shipments.show', $shipment->id) }}" class="text-teal-700 hover:text-teal-900 font-semibold hover:underline">
                                 View Details →
                             </a>
                         </td>

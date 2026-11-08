@@ -7,7 +7,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-200">
         <div>
             <div class="flex items-center gap-2 mb-1 text-xs text-slate-500 font-medium">
-                <a href="{{ route('shipments.index') }}" class="hover:text-blue-600">Shipments</a>
+                <a href="{{ route('shipments.index') }}" class="hover:text-teal-700">Shipments</a>
                 <span>/</span>
                 <span class="text-slate-800 font-mono font-bold">{{ $shipment->shipment_number }}</span>
             </div>
@@ -22,7 +22,7 @@
                         DELIVERED
                     </span>
                 @elseif($shipment->current_status === 'IN_TRANSIT')
-                    <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-blue-600 text-white shadow-xs">
+                    <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-teal-600 text-white shadow-xs">
                         IN TRANSIT
                     </span>
                 @else
@@ -42,7 +42,7 @@
             <form method="POST" action="{{ route('shipments.status.update', $shipment->id) }}">
                 @csrf @method('PATCH')
                 <input type="hidden" name="new_status" value="BOOKED">
-                <button type="submit" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center gap-1.5 shadow-xs">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs flex items-center gap-1.5 shadow-xs">
                     <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Mark BOOKED
                 </button>
             </form>
@@ -50,7 +50,7 @@
             <form method="POST" action="{{ route('shipments.status.update', $shipment->id) }}">
                 @csrf @method('PATCH')
                 <input type="hidden" name="new_status" value="PICKED_UP">
-                <button type="submit" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center gap-1.5 shadow-xs">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs flex items-center gap-1.5 shadow-xs">
                     <i data-lucide="truck" class="w-3.5 h-3.5"></i> Picked Up
                 </button>
             </form>
@@ -58,7 +58,7 @@
             <form method="POST" action="{{ route('shipments.status.update', $shipment->id) }}">
                 @csrf @method('PATCH')
                 <input type="hidden" name="new_status" value="IN_TRANSIT">
-                <button type="submit" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center gap-1.5 shadow-xs">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs flex items-center gap-1.5 shadow-xs">
                     <i data-lucide="plane" class="w-3.5 h-3.5"></i> In Transit
                 </button>
             </form>
@@ -74,7 +74,7 @@
 
             @if($shipment->current_status !== 'DELIVERED')
             <button onclick="document.getElementById('modal-checkpoint').classList.remove('hidden')" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs flex items-center gap-1.5">
-                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600"></i> Add Checkpoint
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-teal-600"></i> Add Checkpoint
             </button>
 
             <button onclick="document.getElementById('modal-exception').classList.remove('hidden')" class="px-3 py-1.5 rounded-lg border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium text-xs flex items-center gap-1.5">
@@ -111,7 +111,7 @@
         <div class="p-4 rounded-xl bg-white border border-slate-200/90 shadow-xs">
             <div class="flex items-center justify-between text-xs text-slate-500 mb-1">
                 <span class="flex items-center gap-1 text-slate-700 font-medium">
-                    <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-blue-600"></i> OpenWeather Hub
+                    <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-teal-600"></i> OpenWeather Hub
                 </span>
                 <span class="text-[11px] text-slate-400">Atmosphere</span>
             </div>
@@ -189,7 +189,7 @@
                     </div>
                     <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
                         <span class="text-slate-400 text-[11px] block">Batch Number</span>
-                        <span class="font-mono font-semibold text-blue-700 block">{{ $shipment->items->first()->batch_number ?? 'BF-LOT-001' }}</span>
+                        <span class="font-mono font-semibold text-teal-700 block">{{ $shipment->items->first()->batch_number ?? 'BF-LOT-001' }}</span>
                     </div>
                     <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
                         <span class="text-slate-400 text-[11px] block">Quantity Vials</span>
@@ -257,13 +257,13 @@
                 <div class="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
                     @forelse($shipment->trackingEvents as $event)
                     <div class="relative">
-                        <div class="absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-white border-2 {{ $event->event_type === 'EXCEPTION_OCCURRED' ? 'border-rose-600' : ($event->event_type === 'DELIVERED' ? 'border-emerald-600' : 'border-blue-600') }}"></div>
+                        <div class="absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-white border-2 {{ $event->event_type === 'EXCEPTION_OCCURRED' ? 'border-rose-600' : ($event->event_type === 'DELIVERED' ? 'border-emerald-600' : 'border-teal-600') }}"></div>
                         <div class="text-xs">
                             <div class="flex items-center justify-between mb-0.5">
                                 <span class="font-bold text-slate-900">{{ $event->event_type }}</span>
                                 <span class="text-[10px] text-slate-400 font-mono">{{ $event->event_time->format('d M, H:i') }}</span>
                             </div>
-                            <div class="font-medium text-blue-700 text-xs mb-1">
+                            <div class="font-medium text-teal-700 text-xs mb-1">
                                 {{ $event->status_snapshot }}
                             </div>
                             <p class="text-slate-600 text-xs leading-relaxed">
@@ -310,21 +310,21 @@
         </div>
 
         <!-- LIVE OPENSTREETMAP GEOCODING SEARCH -->
-        <div class="p-3 rounded-lg bg-blue-50/70 border border-blue-200/80 space-y-2 text-xs">
+        <div class="p-3 rounded-lg bg-teal-50/70 border border-teal-200/80 space-y-2 text-xs">
             <div class="flex items-center justify-between">
-                <label class="font-bold text-blue-950 flex items-center gap-1.5">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600"></i> OpenStreetMap Live Geocoding
+                <label class="font-bold text-teal-950 flex items-center gap-1.5">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-teal-600"></i> OpenStreetMap Live Geocoding
                 </label>
-                <span class="text-[10px] font-mono font-semibold text-blue-700 bg-blue-100/70 px-1.5 py-0.5 rounded">Nominatim API</span>
+                <span class="text-[10px] font-mono font-semibold text-teal-700 bg-teal-100/70 px-1.5 py-0.5 rounded">Nominatim API</span>
             </div>
             <div class="flex gap-2">
                 <input type="text" id="geocode-search-input" placeholder="Search airport, seaport, or hub (e.g. Dubai Airport, Changi, Schiphol)..." 
-                    class="flex-1 p-2 rounded-lg border border-slate-200 bg-white text-slate-800 text-xs focus:outline-none focus:border-blue-500">
-                <button type="button" id="btn-geocode-search" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shrink-0 flex items-center gap-1">
+                    class="flex-1 p-2 rounded-lg border border-slate-200 bg-white text-slate-800 text-xs focus:outline-none focus:border-teal-600">
+                <button type="button" id="btn-geocode-search" class="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg shrink-0 flex items-center gap-1">
                     <i data-lucide="search" class="w-3.5 h-3.5"></i> Find
                 </button>
             </div>
-            <div id="geocode-results" class="hidden space-y-1 max-h-36 overflow-y-auto border border-blue-200 rounded-lg p-1.5 bg-white text-xs"></div>
+            <div id="geocode-results" class="hidden space-y-1 max-h-36 overflow-y-auto border border-teal-200 rounded-lg p-1.5 bg-white text-xs"></div>
             <div id="geocode-live-feedback" class="hidden text-[11px] text-emerald-700 font-medium flex items-center gap-1">
                 <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> <span id="geocode-feedback-text"></span>
             </div>
@@ -387,7 +387,7 @@
 
             <div class="pt-3 flex justify-end gap-2">
                 <button type="button" onclick="document.getElementById('modal-checkpoint').classList.add('hidden')" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium">Cancel</button>
-                <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold">Save Checkpoint</button>
+                <button type="submit" class="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold">Save Checkpoint</button>
             </div>
         </form>
     </div>
@@ -452,19 +452,41 @@
         const destLat = {{ $shipment->destination->latitude }};
         const destLng = {{ $shipment->destination->longitude }};
 
-        const map = L.map('shipment-map').setView([originLat, originLng], 4);
+        const osmStreet = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+        });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-        }).addTo(map);
+            attribution: 'Tiles &copy; Esri'
+        });
+
+        const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 18,
+            attribution: 'Tiles &copy; Esri &mdash; Satellite'
+        });
+
+        const map = L.map('shipment-map', {
+            center: [originLat, originLng],
+            zoom: 4,
+            layers: [osmStreet]
+        });
+
+        L.control.layers({
+            "OpenStreetMap": osmStreet,
+            "Esri Street": esriStreet,
+            "Satellite": esriSatellite
+        }, null, { position: 'topright' }).addTo(map);
+
+        setTimeout(() => { map.invalidateSize(); }, 300);
 
         const routeCoords = [];
 
         // Origin marker
         const originMarker = L.circleMarker([originLat, originLng], {
             radius: 7,
-            fillColor: '#0284c7',
+            fillColor: '#0f766e',
             color: '#ffffff',
             weight: 2,
             fillOpacity: 1
@@ -478,7 +500,7 @@
                 routeCoords.push([{{ $ev->recorded_lat }}, {{ $ev->recorded_lng }}]);
                 L.circleMarker([{{ $ev->recorded_lat }}, {{ $ev->recorded_lng }}], {
                     radius: 5,
-                    fillColor: '{{ $ev->event_type === "EXCEPTION_OCCURRED" ? "#ef4444" : "#0284c7" }}',
+                    fillColor: '{{ $ev->event_type === "EXCEPTION_OCCURRED" ? "#ef4444" : "#0d9488" }}',
                     color: '#ffffff',
                     weight: 2,
                     fillOpacity: 1
@@ -502,7 +524,7 @@
         routeCoords.push([destLat, destLng]);
 
         const polyline = L.polyline(routeCoords, {
-            color: '{{ $shipment->is_delayed ? "#f59e0b" : "#0284c7" }}',
+            color: '{{ $shipment->is_delayed ? "#f59e0b" : "#0d9488" }}',
             weight: 3,
             opacity: 0.8,
             dashArray: '6, 6'
@@ -540,11 +562,11 @@
                         geocodeResults.classList.remove('hidden');
                         json.data.forEach(item => {
                             const opt = document.createElement('div');
-                            opt.className = 'p-2 hover:bg-blue-50 cursor-pointer rounded transition-colors text-slate-800 border-b border-slate-100 last:border-0';
+                            opt.className = 'p-2 hover:bg-teal-50 cursor-pointer rounded transition-colors text-slate-800 border-b border-slate-100 last:border-0';
                             opt.innerHTML = `
                                 <div class="font-bold text-slate-900">${item.name}</div>
                                 <div class="text-[11px] text-slate-500 truncate">${item.display_name}</div>
-                                <div class="text-[10px] font-mono text-blue-600">GPS: ${item.lat}, ${item.lng} (${item.source})</div>
+                                <div class="text-[10px] font-mono text-teal-700 font-semibold">GPS: ${item.lat}, ${item.lng} (${item.source})</div>
                             `;
                             opt.addEventListener('click', () => {
                                 latInput.value = item.lat;
@@ -607,13 +629,13 @@
 
                             data.data.forEach(item => {
                                 const row = document.createElement('div');
-                                row.className = 'p-2 hover:bg-blue-50 rounded-lg cursor-pointer border-b border-slate-100 last:border-b-0 flex items-start justify-between gap-2';
+                                row.className = 'p-2 hover:bg-teal-50 rounded-lg cursor-pointer border-b border-slate-100 last:border-b-0 flex items-start justify-between gap-2';
                                 row.innerHTML = `
                                     <div class="flex-1">
                                         <div class="font-semibold text-slate-900">${item.name}</div>
                                         <div class="text-[10px] text-slate-400 truncate max-w-xs">${item.display_name}</div>
                                     </div>
-                                    <span class="text-[10px] font-mono font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded shrink-0">
+                                    <span class="text-[10px] font-mono font-bold text-teal-700 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded shrink-0">
                                         ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}
                                     </span>
                                 `;

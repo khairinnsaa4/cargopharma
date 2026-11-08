@@ -131,4 +131,19 @@ class ExternalApisTest extends TestCase
         $response->assertSee('Live Global Logistics', false);
         $response->assertSee('Advisories');
     }
+
+    public function test_global_radar_page_renders_with_currency_weather_and_continental_news(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'admin',
+        ]);
+
+        $response = $this->actingAs($user)->get('/global-radar');
+
+        $response->assertStatus(200);
+        $response->assertSee('Global Logistics Radar');
+        $response->assertSee('Konverter Mata Uang Bebas Pilih');
+        $response->assertSee('Peta Radar Cuaca Real-Time Bandara Dunia');
+        $response->assertSee('Berita &amp; Regulasi Logistik Antar Benua', false);
+    }
 }

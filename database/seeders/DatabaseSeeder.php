@@ -336,7 +336,69 @@ class DatabaseSeeder extends Seeder
             'container_type' => 'Credo Cube Passive Chilled Shipper (+2C to +8C)',
         ]);
 
-        // 7. SEED NOTIFICATIONS
+        // 7. SEED SHIPMENT 4: IN_TRANSIT LAND CONVOY (Refrigerated Truck Convoy)
+        $shipment4 = Shipment::create([
+            'shipment_number' => 'CT-BIO-2024-004',
+            'customer_id' => $customerKemenkes->id,
+            'carrier_id' => $landFleet->id,
+            'origin_location_id' => $bdoPlant->id,
+            'destination_location_id' => $cgkAirport->id,
+            'cargo_type' => 'Biological Vaccine - Cold Chain (Pentabio DTP-HB-Hib)',
+            'target_temp_min' => 2.00,
+            'target_temp_max' => 8.00,
+            'total_weight_kg' => 1250.00,
+            'total_volume_cbm' => 5.20,
+            'expected_departure' => Carbon::now()->subHours(4),
+            'expected_arrival' => Carbon::now()->addHours(2),
+            'actual_departure' => Carbon::now()->subHours(4),
+            'current_status' => 'IN_TRANSIT',
+            'is_delayed' => false,
+            'delay_duration_hours' => 0,
+            'delay_severity' => 'NONE',
+            'created_by' => $operator->id,
+            'notes' => 'Bandung to CGK cold truck convoy. Active ThermoKing refrigeration unit.',
+        ]);
+
+        ShipmentItem::create([
+            'shipment_id' => $shipment4->id,
+            'item_code' => 'BF-PNT-05D',
+            'product_name' => 'Pentabio DTP-HB-Hib Combined Vaccine (5-Dose)',
+            'batch_number' => 'BF-2024-PNT44',
+            'expiry_date' => Carbon::now()->addYears(2),
+            'quantity_vials' => 85000,
+            'doses_per_vial' => 5,
+            'container_type' => 'ThermoKing V-500 Cold-Reefer Truck #FL-04',
+        ]);
+
+        TrackingEvent::create([
+            'shipment_id' => $shipment4->id,
+            'location_id' => $bdoPlant->id,
+            'event_type' => 'PICKED_UP',
+            'status_snapshot' => 'Dimuat ke armada truk berpendingin di Fasilitas Bio Farma Pasteur.',
+            'event_time' => Carbon::now()->subHours(4),
+            'recorded_lat' => -6.8995321,
+            'recorded_lng' => 107.5976542,
+            'ambient_temperature' => 26.5,
+            'container_temperature' => 4.2,
+            'description' => 'Cold chain loading verified at +4.2°C. Pre-trip inspection passed.',
+            'created_by' => $operator->id,
+        ]);
+
+        TrackingEvent::create([
+            'shipment_id' => $shipment4->id,
+            'location_id' => null,
+            'event_type' => 'IN_TRANSIT',
+            'status_snapshot' => 'Konvoi melintas di Tol Cipularang KM 72 menuju Terminal Kargo CGK.',
+            'event_time' => Carbon::now()->subHours(1),
+            'recorded_lat' => -6.5050,
+            'recorded_lng' => 107.4520,
+            'ambient_temperature' => 31.0,
+            'container_temperature' => 4.6,
+            'description' => 'Overland highway transit en-route to Jakarta. Temperature stably maintained at 4.6°C.',
+            'created_by' => $operator->id,
+        ]);
+
+        // 8. SEED NOTIFICATIONS
         Notification::create([
             'user_id' => $customerUnicef->id,
             'shipment_id' => $shipment1->id,

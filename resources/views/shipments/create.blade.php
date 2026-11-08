@@ -6,12 +6,12 @@
     <!-- HEADER -->
     <div class="pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2 mb-1 text-xs text-slate-500 font-medium">
-            <a href="{{ route('shipments.index') }}" class="hover:text-blue-600">Shipments</a>
+            <a href="{{ route('shipments.index') }}" class="hover:text-teal-700">Shipments</a>
             <span>/</span>
             <span class="text-slate-800 font-bold">New Consignment</span>
         </div>
         <h1 class="text-xl font-bold text-slate-900 tracking-tight">Create Consignment</h1>
-        <p class="text-xs text-slate-500">Register and dispatch a new temperature-controlled consignment into CargoTrace.</p>
+        <p class="text-xs text-slate-500">Register and dispatch a new temperature-controlled consignment into CargoPharma.</p>
     </div>
 
     <!-- FORM CARD -->
@@ -22,7 +22,7 @@
             <!-- 1. Consignment Identity & Routing -->
             <div class="space-y-3">
                 <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
-                    <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i> 1. Consignment Routing & Identification
+                    <i data-lucide="file-text" class="w-4 h-4 text-teal-600"></i> 1. Consignment Routing & Identification
                 </h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -72,7 +72,7 @@
             <!-- 2. Cargo & Thermal Thresholds -->
             <div class="space-y-3 pt-2">
                 <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
-                    <i data-lucide="package" class="w-4 h-4 text-blue-600"></i> 2. Cargo Manifest & Cold-Chain Constraints
+                    <i data-lucide="package" class="w-4 h-4 text-teal-600"></i> 2. Cargo Manifest & Cold-Chain Constraints
                 </h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -138,7 +138,7 @@
             <!-- 3. Departure & Arrival Schedule -->
             <div class="space-y-3 pt-2">
                 <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
-                    <i data-lucide="clock" class="w-4 h-4 text-blue-600"></i> 3. Delivery Schedule & ETA
+                    <i data-lucide="clock" class="w-4 h-4 text-teal-600"></i> 3. Delivery Schedule & ETA
                 </h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -164,7 +164,7 @@
             <!-- ACTIONS -->
             <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
                 <a href="{{ route('shipments.index') }}" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-all">Cancel</a>
-                <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center gap-1.5 shadow-sm transition-all">
+                <button type="submit" class="px-5 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold flex items-center gap-1.5 shadow-xs transition-all">
                     <i data-lucide="check" class="w-4 h-4"></i> Save & Register Consignment
                 </button>
             </div>

@@ -15,9 +15,10 @@ class ApiExternalServiceController extends Controller
     /**
      * Get real-time foreign currency exchange rates (ECB / Frankfurter API).
      */
-    public function getCurrencyRates(CurrencyApiService $currencyService): JsonResponse
+    public function getCurrencyRates(Request $request, CurrencyApiService $currencyService): JsonResponse
     {
-        $data = $currencyService->getRates();
+        $base = $request->input('base', 'USD');
+        $data = $currencyService->getRates($base);
 
         return response()->json([
             'success' => true,
