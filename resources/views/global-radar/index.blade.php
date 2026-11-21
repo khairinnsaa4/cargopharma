@@ -55,8 +55,8 @@
                         <i data-lucide="cloud-sun" class="w-4 h-4"></i>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-slate-900 leading-tight">Peta Cuaca Tiap Negara</h3>
-                        <span class="text-[10px] text-teal-700 font-mono font-medium">{{ count($globalWeatherHubs) }} Negara &amp; Hub Internasional</span>
+                        <h3 class="text-sm font-bold text-slate-900 leading-tight">Peta Cuaca Tiap Negara &amp; Daerah</h3>
+                        <span class="text-[10px] text-teal-700 font-mono font-medium">{{ count($globalWeatherHubs) }} Titik Daerah &amp; Hub Internasional</span>
                     </div>
                 </div>
 
@@ -89,14 +89,30 @@
                 </div>
             </div>
 
-            <!-- Right: Country Dropdown Selector & Reset View -->
+            <!-- Right: Country & City Dropdown Selector & Reset View -->
             <div class="flex items-center gap-2">
-                <select id="airport-weather-selector" onchange="focusAirportOnMap(this.value)" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:border-teal-600 shadow-2xs max-w-[240px] sm:max-w-xs truncate">
-                    <option value="" selected>-- Pilih Negara / Bandara Dunia --</option>
-                    @foreach($globalWeatherHubs as $index => $wh)
-                        <option value="{{ $index }}" data-continent="{{ $wh['continent'] }}">
-                            {{ $wh['flag'] }} {{ $wh['country'] }} - {{ $wh['city'] }} ({{ $wh['emoji'] ?? '⛅' }} {{ round($wh['temp'], 1) }}°C)
-                        </option>
+                <select id="airport-weather-selector" onchange="focusAirportOnMap(this.value)" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:border-teal-600 shadow-2xs max-w-[260px] sm:max-w-xs truncate">
+                    <option value="" selected>-- Pilih Negara / Daerah Dunia --</option>
+                    @php
+                        $groupedHubs = collect($globalWeatherHubs)->groupBy('country');
+                    @endphp
+                    @foreach($groupedHubs as $countryName => $cityList)
+                        <optgroup label="{{ $cityList->first()['flag'] }} {{ $countryName }} ({{ count($cityList) }} Daerah)" data-continent="{{ $cityList->first()['continent'] }}">
+                            @foreach($cityList as $wh)
+                                @php
+                                    $origIdx = 0;
+                                    foreach($globalWeatherHubs as $k => $item) {
+                                        if ($item['city'] === $wh['city'] && $item['hub_code'] === $wh['hub_code']) {
+                                            $origIdx = $k;
+                                            break;
+                                        }
+                                    }
+                                @endphp
+                                <option value="{{ $origIdx }}" data-continent="{{ $wh['continent'] }}">
+                                    {{ $wh['city'] }} ({{ $wh['emoji'] ?? '⛅' }} {{ round($wh['temp'], 1) }}°C)
+                                </option>
+                            @endforeach
+                        </optgroup>
                     @endforeach
                 </select>
 
@@ -774,7 +790,7 @@
         const hub = weatherHubs[index];
         if (!hub || !weatherMap) return;
 
-        weatherMap.flyTo([hub.lat, hub.lon], 5, { duration: 1.2 });
+        weatherMap.flyTo([hub.lat, hub.lon], 6, { duration: 1.2 });
         if (weatherMarkers[index]) {
             setTimeout(() => {
                 weatherMarkers[index].openPopup();
@@ -832,6 +848,23 @@
                 }
             }
         });
+
+        // Filter selector dropdown options & optgroups
+        const sel = document.getElementById('airport-weather-selector');
+        if (sel) {
+            const optgroups = sel.querySelectorAll('optgroup');
+            optgroups.forEach(og => {
+                const options = og.querySelectorAll('option');
+                let anyVisible = false;
+                options.forEach(opt => {
+                    const optContinent = opt.getAttribute('data-continent');
+                    const show = (continent === 'ALL' || optContinent === continent);
+                    opt.hidden = !show;
+                    if (show) anyVisible = true;
+                });
+                og.hidden = !anyVisible;
+            });
+        }
 
         if (continentBounds.length > 0 && weatherMap) {
             weatherMap.fitBounds(L.latLngBounds(continentBounds), { padding: [50, 50], maxZoom: 5 });
