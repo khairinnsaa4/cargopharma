@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Shipment;
+use App\Services\RoutingService;
+use App\Services\TimeApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TrackingPageController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, RoutingService $routingService, TimeApiService $timeService)
     {
         $user = Auth::user();
         $query = Shipment::with([
@@ -38,21 +40,57 @@ class TrackingPageController extends Controller
             });
         }
 
-        if ($request->filled('q')) {
-            $activeShipments = (clone $query)->get();
-        } else {
-            $activeShipments = (clone $query)->whereIn('current_status', ['PICKED_UP', 'IN_TRANSIT'])->get();
-            if ($activeShipments->isEmpty()) {
-                $activeShipments = (clone $query)->latest()->take(3)->get();
+        if ($request->filled('status') && $request->status !== 'ALL') {
+            if ($request->status === 'ACTIVE') {
+                $query->whereIn('current_status', ['PICKED_UP', 'IN_TRANSIT']);
+            } else {
+                $query->where('current_status', $request->status);
             }
         }
 
         $allShipments = (clone $query)->latest()->paginate(10)->withQueryString();
 
+        // For the geospatial tracking map, display all matching consignments with valid route coordinates
+        $activeShipments = (clone $query)
+            ->whereNotNull('origin_location_id')
+            ->whereNotNull('destination_location_id')
+            ->latest()
+            ->get();
+
         // Transform active shipments into structured JSON payload for Leaflet map
-        $mapShipmentsData = $activeShipments->map(function ($s) {
+        $mapShipmentsData = $activeShipments->map(function ($s) use ($routingService, $timeService) {
             $firstItem = $s->items->first();
             $latestEvent = $s->latestTrackingEvent;
+
+            $transportType = strtolower($s->carrier?->transport_type ?? 'air');
+            $originLat = (float) $s->origin?->latitude;
+            $originLng = (float) $s->origin?->longitude;
+            $destLat = (float) $s->destination?->latitude;
+            $destLng = (float) $s->destination?->longitude;
+
+            // Compute realistic geodesic curved flight path, highway road, or sea lane
+            $routeResult = match ($transportType) {
+                'air' => $routingService->getAirRoute($originLat, $originLng, $destLat, $destLng),
+                'sea' => $routingService->getSeaRoute($originLat, $originLng, $destLat, $destLng),
+                default => $routingService->getRoadRoute($originLat, $originLng, $destLat, $destLng),
+            };
+
+            // Optimize & downsample dense polyline coordinates for silky smooth Leaflet rendering
+            $routeCoords = $routeResult['coordinates'] ?? [];
+            if (count($routeCoords) > 180) {
+                $step = (int) ceil(count($routeCoords) / 150);
+                $downsampled = [];
+                $totalPts = count($routeCoords);
+                for ($i = 0; $i < $totalPts; $i++) {
+                    if ($i === 0 || $i === $totalPts - 1 || $i % $step === 0) {
+                        $downsampled[] = $routeCoords[$i];
+                    }
+                }
+                $routeCoords = $downsampled;
+            }
+
+            $originLocalTime = $timeService->getTimeForCoordinates($originLat, $originLng);
+            $destLocalTime = $timeService->getTimeForCoordinates($destLat, $destLng);
 
             $waypoints = [];
             if ($s->origin) {
@@ -104,6 +142,11 @@ class TrackingPageController extends Controller
 
             $currentLat = $latestEvent && $latestEvent->recorded_lat !== null ? (float) $latestEvent->recorded_lat : (float) $s->origin?->latitude;
             $currentLng = $latestEvent && $latestEvent->recorded_lng !== null ? (float) $latestEvent->recorded_lng : (float) $s->origin?->longitude;
+
+            if ($s->current_status === 'DELIVERED' && $s->destination) {
+                $currentLat = (float) $s->destination->latitude;
+                $currentLng = (float) $s->destination->longitude;
+            }
 
             $targetLat = (float) $s->destination?->latitude;
             $targetLng = (float) $s->destination?->longitude;
@@ -181,6 +224,10 @@ class TrackingPageController extends Controller
                     'target_lat' => $targetLat,
                     'target_lng' => $targetLng,
                 ],
+                'route_geometry' => $routeCoords,
+                'distance_km' => $routeResult['distance_km'] ?? null,
+                'origin_local_time' => $originLocalTime,
+                'dest_local_time' => $destLocalTime,
                 'waypoints' => $waypoints,
                 'show_url' => route('shipments.show', $s->id),
             ];

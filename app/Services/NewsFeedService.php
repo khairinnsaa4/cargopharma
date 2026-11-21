@@ -12,38 +12,23 @@ class NewsFeedService
 
     public function __construct()
     {
-        $this->reliefWebUrl = 'https://api.reliefweb.int/v1/reports';
+        $this->reliefWebUrl = config('services.reliefweb.url', 'https://api.reliefweb.int/v1/reports');
     }
 
     /**
-     * Get real-time global cold-chain, health, and humanitarian logistics advisories organized by continent.
-     *
-     * @return array<string, array<int, array{
-     *     id: string,
-     *     continent: string,
-     *     country: string,
-     *     hub: string,
-     *     flag: string,
-     *     title: string,
-     *     source: string,
-     *     url: string,
-     *     date: string,
-     *     category: string,
-     *     badge_color: string,
-     *     summary: string,
-     *     operational_impact: string
-     * }>>
+     * Get global cold-chain, health, and humanitarian logistics advisories organized by continent.
+     * Clearly differentiates between LIVE NEWS (real API data) and DEMO ADVISORY (curated contextual precedents).
      */
     public function getAdvisoriesByContinent(): array
     {
-        return Cache::remember('cargopharma_continental_news_v2', 900, function (): array {
-            $curated = $this->getComprehensiveContinentalAdvisories();
+        return Cache::remember('cargopharma_continental_news_v3', 900, function (): array {
+            $curated = $this->getCuratedDemoAdvisories();
 
-            // Attempt live fetch from UN ReliefWeb to supplement
+            // Attempt live fetch from UN ReliefWeb API
             try {
-                $response = Http::timeout(4)->get($this->reliefWebUrl, [
+                $response = Http::timeout(5)->get($this->reliefWebUrl, [
                     'appname' => 'cargopharma-global',
-                    'limit' => 3,
+                    'limit' => 5,
                     'preset' => 'latest',
                     'profile' => 'list',
                 ]);
@@ -55,27 +40,32 @@ class NewsFeedService
                     foreach ($data as $item) {
                         $fields = $item['fields'] ?? [];
                         $title = $fields['title'] ?? '';
+                        $dateStr = isset($fields['date']['created'])
+                            ? date('d M Y', strtotime($fields['date']['created']))
+                            : date('d M Y');
+
                         if (! empty($title)) {
                             $curated['Global'][] = [
                                 'id' => 'RW-'.($item['id'] ?? uniqid()),
                                 'continent' => 'Global',
-                                'country' => 'Global Response',
-                                'hub' => 'UN OCHA / WHO Gateway',
+                                'country' => 'Global / UN OCHA',
+                                'hub' => 'International Health Logistics',
                                 'flag' => '🌐',
                                 'title' => $title,
-                                'source' => $fields['source'][0]['name'] ?? 'UN ReliefWeb Live',
+                                'source' => $fields['source'][0]['name'] ?? 'UN ReliefWeb',
                                 'url' => $fields['url'] ?? 'https://reliefweb.int',
-                                'date' => date('d M Y'),
-                                'category' => 'Live UN Bulletin',
-                                'badge_color' => 'bg-teal-50 text-teal-800 border-teal-200',
-                                'summary' => 'Pembaruan resmi terkait pergerakan bantuan kemanusiaan darurat, status koridor perbatasan, dan regulasi kesehatan internasional.',
-                                'operational_impact' => 'Pantau kemungkinan perubahan jadwal izin lintas udara (fly-over clearance) dan karantina pelabuhan.',
+                                'date' => $dateStr,
+                                'category' => 'Health & Pharmaceutical',
+                                'feed_type' => 'LIVE NEWS',
+                                'badge_color' => 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold',
+                                'summary' => 'Official UN bulletin regarding emergency humanitarian supply corridors, customs transit protocols, and global health response.',
+                                'operational_impact' => 'Active monitoring recommended for air-freight fly-over clearances and airport customs clearance staging.',
                             ];
                         }
                     }
                 }
             } catch (\Throwable $e) {
-                Log::warning('ReliefWeb live supplement skipped: '.$e->getMessage());
+                Log::warning('ReliefWeb live news fetch skipped: '.$e->getMessage());
             }
 
             return $curated;
@@ -83,9 +73,7 @@ class NewsFeedService
     }
 
     /**
-     * Flattened advisories list for backward compatibility.
-     *
-     * @return array<int, array{id: string, title: string, source: string, url: string, date: string, category: string, badge_color: string, summary: string}>
+     * Flattened advisories list.
      */
     public function getAdvisories(): array
     {
@@ -97,193 +85,123 @@ class NewsFeedService
             }
         }
 
-        return array_slice($flat, 0, 8);
+        return array_slice($flat, 0, 10);
     }
 
     /**
-     * Curated continental intelligence network specifically for Bio Farma vaccine exports.
-     *
-     * @return array<string, array<int, array{
-     *     id: string,
-     *     continent: string,
-     *     country: string,
-     *     hub: string,
-     *     flag: string,
-     *     title: string,
-     *     source: string,
-     *     url: string,
-     *     date: string,
-     *     category: string,
-     *     badge_color: string,
-     *     summary: string,
-     *     operational_impact: string
-     * }>>
+     * Curated demonstration advisories with authentic fixed timestamps (NO fake dynamic date spoofing).
      */
-    protected function getComprehensiveContinentalAdvisories(): array
+    protected function getCuratedDemoAdvisories(): array
     {
         return [
             'Asia' => [
                 [
-                    'id' => 'NEWS-ASIA-01',
+                    'id' => 'DEMO-ASIA-01',
                     'continent' => 'Asia',
                     'country' => 'Indonesia',
                     'hub' => 'Bandung (BDO) & Jakarta (CGK)',
                     'flag' => '🇮🇩',
-                    'title' => 'PT Bio Farma Pastikan Kesiapan Rantai Pasok Ekspor Vaksin Polio nOPV2',
-                    'source' => 'Badan POM & Kemenkes RI',
+                    'title' => 'PT Bio Farma Menuntaskan Uji Validasi Kontainer Dingin Ekspor Vaksin nOPV2',
+                    'source' => 'Badan Pengawas Obat dan Makanan (BPOM)',
                     'url' => 'https://www.biofarma.co.id',
-                    'date' => date('d M Y'),
-                    'category' => 'Batch Release',
-                    'badge_color' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
-                    'summary' => 'Sertifikat Lot Release Resmi telah terbit untuk kuota ekspor 50.000 vial nOPV2. Seluruh sistem passive cooler Envirotainer e2 telah lulus uji thermal pre-conditioning pada suhu -20°C di pabrik Pasteur Bandung.',
-                    'operational_impact' => 'Kargo siap diangkut armada berpendingin menuju Bandara Internasional Soekarno-Hatta (CGK).',
+                    'date' => '02 Nov 2026',
+                    'category' => 'Health & Pharmaceutical',
+                    'feed_type' => 'DEMO ADVISORY',
+                    'badge_color' => 'bg-teal-50 text-teal-800 border-teal-200',
+                    'summary' => 'Sertifikat Lot Release Resmi telah terbit untuk batch ekspor 150.000 vial nOPV2. Seluruh unit kontainer aktif Envirotainer telah lulus pre-conditioning suhu -20°C di fasilitas Bio Farma Pasteur.',
+                    'operational_impact' => 'Kargo telah siap diberangkatkan menuju Bandara Soekarno-Hatta (CGK) via konvoi berpendingin.',
                 ],
                 [
-                    'id' => 'NEWS-ASIA-02',
+                    'id' => 'DEMO-ASIA-02',
                     'continent' => 'Asia',
                     'country' => 'Singapura',
                     'hub' => 'Singapore Changi (SIN)',
                     'flag' => '🇸🇬',
-                    'title' => 'Changi Airport Memperluas Fasilitas Cold-Chain Farmasi CEIV Pharma Hub',
+                    'title' => 'Changi Airport Memperluas Fasilitas Penanganan Dingin Farmasi CEIV',
                     'source' => 'Civil Aviation Authority of Singapore',
                     'url' => 'https://www.changiairport.com',
-                    'date' => date('d M Y', strtotime('-1 day')),
-                    'category' => 'Transit Hub',
+                    'date' => '28 Okt 2026',
+                    'category' => 'Logistics & Supply Chain',
+                    'feed_type' => 'DEMO ADVISORY',
                     'badge_color' => 'bg-teal-50 text-teal-800 border-teal-200',
-                    'summary' => 'Jalur cepat (Green Corridor) dibuka bagi konsinyasi vaksin tujuan Asia Tenggara dan Oseania dengan waktu transfer antar-pesawat di bawah 45 menit tanpa putus rantai dingin.',
-                    'operational_impact' => 'Waktu transit aman untuk rute alternatif tanpa risiko paparan panas aspal.',
+                    'summary' => 'Jalur cepat (Pharma Green Corridor) dibuka bagi konsinyasi vaksin transit Asia Tenggara dengan waktu transfer kargo antar-pesawat di bawah 45 menit.',
+                    'operational_impact' => 'Rute alternatif yang aman untuk meminimalkan risiko keterlambatan perpindahan pesawat.',
                 ],
             ],
 
             'Middle East' => [
                 [
-                    'id' => 'NEWS-ME-01',
+                    'id' => 'DEMO-ME-01',
                     'continent' => 'Middle East',
                     'country' => 'Uni Emirat Arab',
                     'hub' => 'Dubai International (DXB)',
                     'flag' => '🇦🇪',
-                    'title' => 'Emirates SkyPharma DXB Terapkan Protokol Tarmac Cool-Dollies',
-                    'source' => 'Dubai Airports Logistics Hub',
-                    'url' => 'https://www.skycargo.com',
-                    'date' => date('d M Y'),
-                    'category' => 'Thermal Alert',
-                    'badge_color' => 'bg-amber-50 text-amber-800 border-amber-200',
-                    'summary' => 'Mengantisipasi suhu aspal Dubai yang mencapai 41°C, seluruh kontainer palet vaksin Bio Farma dipindahkan menggunakan kendaraan pendingin hermetis (Cool-Dollies) berteknologi GPS real-time.',
-                    'operational_impact' => 'Monitoring ketat wajib dilakukan selama jeda transit 2 jam 15 menit penerbangan EK359 menuju Abuja.',
-                ],
-                [
-                    'id' => 'NEWS-ME-02',
-                    'continent' => 'Middle East',
-                    'country' => 'Qatar',
-                    'hub' => 'Hamad International (DOH)',
-                    'flag' => '🇶🇦',
-                    'title' => 'Qatar Airways Cargo Membuka Layanan Khusus Penanganan Vaksin Kritis',
-                    'source' => 'Qatar Airways Cargo Pharma',
-                    'url' => 'https://www.qrcargo.com',
-                    'date' => date('d M Y', strtotime('-2 days')),
-                    'category' => 'SLA Update',
-                    'badge_color' => 'bg-teal-50 text-teal-800 border-teal-200',
-                    'summary' => 'Pusat kargo iklim terkendali (Climate Control Center) seluas 4.000 m² beroperasi penuh dengan kemampuan penyimpanan simultan rentang -20°C, 2-8°C, dan 15-25°C.',
-                    'operational_impact' => 'Rute cadangan siap digunakan bila terjadi penumpukan kargo udara di koridor Dubai.',
+                    'title' => 'Peringatan Gelombang Panas Tarmac Bandara Dubai: Suhu Landasan Mencapai 43°C',
+                    'source' => 'UAE National Center of Meteorology',
+                    'url' => 'https://www.emirates.com/skypharma',
+                    'date' => '01 Nov 2026',
+                    'category' => 'Weather & Natural Disaster',
+                    'feed_type' => 'DEMO ADVISORY',
+                    'badge_color' => 'bg-amber-50 text-amber-800 border-amber-300 font-semibold',
+                    'summary' => 'Suhu landasan aspal terbuka melebihi 43°C pada siang hari. Emirates SkyPharma mengaktifkan prosedur Pharma Cool Dolly berpemanas reflektif untuk memindahkan kargo vaksin ke Cool Cell indoor.',
+                    'operational_impact' => 'Wajib pastikan kontainer aktif beralih ke daya listrik terminal selama masa tunggu feeder flight.',
                 ],
             ],
 
             'Africa' => [
                 [
-                    'id' => 'NEWS-AFRICA-01',
+                    'id' => 'DEMO-AF-01',
                     'continent' => 'Africa',
                     'country' => 'Nigeria',
-                    'hub' => 'Nnamdi Azikiwe International (ABV)',
+                    'hub' => 'Abuja Nnamdi Azikiwe (ABV)',
                     'flag' => '🇳🇬',
-                    'title' => 'Kemenkes Nigeria & UNICEF Siapkan Distribusi Vaksin Polio Sub-Sahara',
-                    'source' => 'National Primary Health Care Development Agency (NPHCDA)',
-                    'url' => 'https://nphcda.gov.ng',
-                    'date' => date('d M Y'),
-                    'category' => 'Outbreak Response',
-                    'badge_color' => 'bg-rose-50 text-rose-800 border-rose-200',
-                    'summary' => 'Otoritas bea cukai Bandara Abuja (ABV) memberikan izin Green Line Clearance bebas hambatan untuk kedatangan kargo Bio Farma nOPV2 guna mendukung kampanye imunisasi darurat 12 juta balita.',
-                    'operational_impact' => 'Pihak Consignee UNICEF Global Supply dan Kementerian Kesehatan Nigeria siap menerima kargo langsung di sisi landasan pacu.',
-                ],
-                [
-                    'id' => 'NEWS-AFRICA-02',
-                    'continent' => 'Africa',
-                    'country' => 'Kenya',
-                    'hub' => 'Jomo Kenyatta Airport (NBO)',
-                    'flag' => '🇰🇪',
-                    'title' => 'EAC (East African Community) Harmonisasi Standar Cold-Chain Vaksin',
-                    'source' => 'East African Health Commission',
-                    'url' => 'https://www.eac.int',
-                    'date' => date('d M Y', strtotime('-2 days')),
-                    'category' => 'Customs & Port',
+                    'title' => 'NPHCDA Nigeria Siapkan Distribusi Nasional Vaksin Polio Outbreak Response',
+                    'source' => 'Federal Ministry of Health & UNICEF',
+                    'url' => 'https://www.unicef.org/nigeria',
+                    'date' => '29 Okt 2026',
+                    'category' => 'Health & Pharmaceutical',
+                    'feed_type' => 'DEMO ADVISORY',
                     'badge_color' => 'bg-teal-50 text-teal-800 border-teal-200',
-                    'summary' => 'Kenya, Uganda, dan Rwanda menyepakati inspeksi dokumen digital otomatis untuk vaksin WHO PQS, memangkas masa tunggu di gudang kargo bandara dari 24 jam menjadi hanya 3 jam.',
-                    'operational_impact' => 'Koridor distribusi Bio Farma ke Afrika Timur semakin efisien dan aman dari fluktuasi temperatur.',
+                    'summary' => 'Gudang Cold Store Nasional Abuja telah menyiapkan fasilitas walk-in freezer -20°C untuk menerima kedatangan 150.000 vial vaksin nOPV2 Bio Farma.',
+                    'operational_impact' => 'Tim penerima Consignee siap melakukan serah terima langsung di cargo apron bandara.',
                 ],
             ],
 
             'Europe' => [
                 [
-                    'id' => 'NEWS-EUR-01',
-                    'continent' => 'Europe',
-                    'country' => 'Denmark',
-                    'hub' => 'Copenhagen Supply Hub (CPH)',
-                    'flag' => '🇩🇰',
-                    'title' => 'UNICEF Global Supply Division Keluarkan Pedoman Pengadaan Vaksin 2026/2027',
-                    'source' => 'UNICEF Supply Division Copenhagen',
-                    'url' => 'https://www.unicef.org/supply',
-                    'date' => date('d M Y'),
-                    'category' => 'Procurement Directive',
-                    'badge_color' => 'bg-teal-50 text-teal-800 border-teal-200',
-                    'summary' => 'UNICEF mengapresiasi produsen yang mengintegrasikan telemetri GPS dan sensor suhu live cloud. Vaksin Bio Farma memenuhi persyaratan akreditasi tertinggi WHO/UNICEF PQS E006.',
-                    'operational_impact' => 'Data telemetri CargoPharma langsung terhubung ke dashboard pengawasan UNICEF Supply Division.',
-                ],
-                [
-                    'id' => 'NEWS-EUR-02',
+                    'id' => 'DEMO-EU-01',
                     'continent' => 'Europe',
                     'country' => 'Swiss',
-                    'hub' => 'Geneva International (GVA)',
+                    'hub' => 'Geneva Airport (GVA)',
                     'flag' => '🇨🇭',
-                    'title' => 'WHO SAGE Rilis Rekomendasi Terkini Protokol Vaksinasi Global',
-                    'source' => 'World Health Organization (WHO) Headquarters',
-                    'url' => 'https://www.who.int/groups/strategic-advisory-group-of-experts-on-immunization',
-                    'date' => date('d M Y', strtotime('-3 days')),
-                    'category' => 'Global Policy',
+                    'title' => 'WHO Perbarui Pedoman WHO PQS E003 untuk Distribusi Vaksin Rentan Panas',
+                    'source' => 'World Health Organization (WHO Headquarters)',
+                    'url' => 'https://www.who.int',
+                    'date' => '25 Okt 2026',
+                    'category' => 'International Trade',
+                    'feed_type' => 'DEMO ADVISORY',
                     'badge_color' => 'bg-teal-50 text-teal-800 border-teal-200',
-                    'summary' => 'WHO menegaskan pentingnya stabilitas suhu 2°C s/d 8°C pada tahap "last-mile delivery" di wilayah tropis dan mewajibkan penggunaan electronic data logger terkalibrasi.',
-                    'operational_impact' => 'Validasi sensor suhu pada CargoPharma memenuhi standar audit Cara Distribusi Obat yang Baik (CDOB).',
+                    'summary' => 'Kewajiban pencatatan suhu kontinu dan pelaporan deviasi suhu maksimal 24 jam setelah insiden ditetapkan sebagai standar wajib audit GMP global.',
+                    'operational_impact' => 'Platform CargoPharma telah sepenuhnya mematuhi standar pencatatan audit log forensik WHO PQS.',
                 ],
             ],
 
             'Americas' => [
                 [
-                    'id' => 'NEWS-AMER-01',
+                    'id' => 'DEMO-AM-01',
                     'continent' => 'Americas',
                     'country' => 'Amerika Serikat',
-                    'hub' => 'Washington (IAD) & New York (JFK)',
+                    'hub' => 'Miami International (MIA)',
                     'flag' => '🇺🇸',
-                    'title' => 'PAHO/WHO Tingkatkan Kesiapsiagaan Vaksin Wilayah Amerika Latin & Karibia',
-                    'source' => 'Pan American Health Organization (PAHO)',
-                    'url' => 'https://www.paho.org',
-                    'date' => date('d M Y', strtotime('-1 day')),
-                    'category' => 'Airlift Directive',
+                    'title' => 'FDA Perketat Protokol Importasi Produk Biologis dan Rantai Pasok Dingin',
+                    'source' => 'U.S. Food and Drug Administration',
+                    'url' => 'https://www.fda.gov',
+                    'date' => '20 Okt 2026',
+                    'category' => 'International Trade',
+                    'feed_type' => 'DEMO ADVISORY',
                     'badge_color' => 'bg-teal-50 text-teal-800 border-teal-200',
-                    'summary' => 'Rute pasokan vaksin donor global melalui Bandara Miami (MIA) dan New York (JFK) diprioritaskan dengan pengawalan logistik khusus bebas penundaan cukai federal.',
-                    'operational_impact' => 'Koridor penerbangan trans-atlantik siap mendukung distribusi vaksin ke negara-negara kepulauan.',
-                ],
-                [
-                    'id' => 'NEWS-AMER-02',
-                    'continent' => 'Americas',
-                    'country' => 'Brasil',
-                    'hub' => 'São Paulo Guarulhos (GRU)',
-                    'flag' => '🇧🇷',
-                    'title' => 'ANVISA Memperbarui Regulasi Impor Produk Biologis & Vaksin Suhu Dingin',
-                    'source' => 'Agência Nacional de Vigilância Sanitária (ANVISA)',
-                    'url' => 'https://www.gov.br/anvisa',
-                    'date' => date('d M Y', strtotime('-3 days')),
-                    'category' => 'Regulatory Update',
-                    'badge_color' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
-                    'summary' => 'Pemerintah Brasil mewajibkan pelaporan data logger suhu terpadu secara instan saat kargo mendarat di bandara kargo internasional.',
-                    'operational_impact' => 'Sistem telemetri CargoPharma memenuhi seluruh ketentuan regulasi impor biologis internasional.',
+                    'summary' => 'Pemeriksaan validasi sensor data-logger independen diwajibkan untuk setiap kargo biologis yang memasuki pelabuhan udara Amerika.',
+                    'operational_impact' => 'Sertifikat kalibrasi sensor wajib diunggah pada berkas pengiriman.',
                 ],
             ],
         ];

@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         // 1. SEED USERS (Admin, Operator, Customers)
         $admin = User::create([
             'name' => 'Administrator Bio Farma',
-            'email' => 'admin@cargotrace.com',
+            'email' => 'admin@cargopharma.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
             'phone' => '+62 811-2233-4455',
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
 
         $operator = User::create([
             'name' => 'Rian Pratama',
-            'email' => 'operator@cargotrace.com',
+            'email' => 'operator@cargopharma.com',
             'password' => Hash::make('password'),
             'role' => 'operator',
             'phone' => '+62 812-9988-7766',
@@ -437,5 +437,8 @@ class DatabaseSeeder extends Seeder
             'ip_address' => '127.0.0.1',
             'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         ]);
+
+        // Seed Multimodal Air, Sea, and Land Shipments
+        $this->call(MultimodalShipmentsSeeder::class);
     }
 }

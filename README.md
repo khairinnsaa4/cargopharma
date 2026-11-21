@@ -87,8 +87,8 @@ A built-in persona switcher is embedded on the login page and top navigation for
 
 | Role | Email | Password | Scope of Authorization |
 | :--- | :--- | :--- | :--- |
-| **Administrator** | `admin@cargotrace.com` | `password` | Master data governance, full consignment registry, and audit trail inspection. |
-| **Logistics Operator** | `operator@cargotrace.com` | `password` | Consignment registration, telemetry logging, status advancement, and incident resolution. |
+| **Administrator** | `admin@cargopharma.com` | `password` | Master data governance, full consignment registry, and audit trail inspection. |
+| **Logistics Operator** | `operator@cargopharma.com` | `password` | Consignment registration, telemetry logging, status advancement, and incident resolution. |
 | **Consignee (Customer)** | `customer@unicef.org` | `password` | Read-only inspection of assigned shipments, live telemetry HUD, and delay notifications. |
 
 ---
@@ -198,7 +198,7 @@ php artisan test
    ```bash
    php artisan serve
    ```
-   Open your browser at `http://127.0.0.1:8000` (or `http://cargotrace.test` if running on Laragon).
+   Open your browser at `http://127.0.0.1:8000` (or `http://cargopharma.test` if running on Laragon).
 
 ---
 

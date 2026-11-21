@@ -19,7 +19,7 @@ class EtaDelayTest extends TestCase
     {
         $customer = User::create([
             'name' => 'Customer Tester',
-            'email' => 'customer_test2@cargotrace.com',
+            'email' => 'customer_test2@cargopharma.com',
             'password' => bcrypt('password'),
             'role' => 'customer',
         ]);
@@ -84,10 +84,10 @@ class EtaDelayTest extends TestCase
         $this->assertEquals('MEDIUM', $resultMed['delay_severity']);
         $this->assertEquals(12, $resultMed['delay_duration_hours']);
 
-        // 4. Test HIGH / CRITICAL severity delay (e.g. 24 hours delay)
-        $resultHigh = $etaService->evaluateDelay($shipment, $expectedArrival->copy()->addHours(24));
+        // 4. Test HIGH / CRITICAL severity delay (e.g. 26 hours delay, > 24 hours)
+        $resultHigh = $etaService->evaluateDelay($shipment, $expectedArrival->copy()->addHours(26));
         $this->assertTrue($resultHigh['is_delayed']);
         $this->assertEquals('HIGH', $resultHigh['delay_severity']);
-        $this->assertEquals(24, $resultHigh['delay_duration_hours']);
+        $this->assertEquals(26, $resultHigh['delay_duration_hours']);
     }
 }

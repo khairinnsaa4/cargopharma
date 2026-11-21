@@ -35,4 +35,42 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | External Logistics & Telemetry APIs
+    |--------------------------------------------------------------------------
+    */
+
+    'weather' => [
+        'url' => env('WEATHER_API_URL', 'https://api.open-meteo.com/v1/forecast'),
+        'api_key' => env('OPENWEATHER_API_KEY'),
+    ],
+
+    'timezone' => [
+        'url' => env('TIMEZONE_API_URL', 'https://timeapi.io/api/time/current/coordinate'),
+    ],
+
+    'currency' => [
+        'url' => env('CURRENCY_API_URL', 'https://open.er-api.com/v6/latest/IDR'),
+        'api_key' => env('EXCHANGERATE_API_KEY'),
+    ],
+
+    'geocoding' => [
+        'url' => env('GEOCODING_API_URL', 'https://nominatim.openstreetmap.org/search'),
+    ],
+
+    'reliefweb' => [
+        'url' => env('RELIEFWEB_API_URL', 'https://api.reliefweb.int/v1/reports'),
+    ],
+
+    'aviation' => [
+        'opensky_url' => env('OPENSKY_API_URL', 'https://opensky-network.org/api/states/all'),
+        'username' => env('OPENSKY_CLIENT_USERNAME'),
+        'password' => env('OPENSKY_CLIENT_PASSWORD'),
+    ],
+
+    'routing' => [
+        'osrm_url' => env('ROUTING_OSRM_URL', 'https://router.project-osrm.org/route/v1/driving'),
+    ],
+
 ];

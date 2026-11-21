@@ -1,55 +1,51 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#F4F7F6] text-slate-800">
+<html lang="id" class="h-full bg-[#061514] text-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication | CargoPharma Biopharma Visibility</title>
+    <title>Masuk | CargoPharma Cold-Chain Logistics</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
-<body class="h-full flex items-center justify-center p-4 sm:p-6 bg-[#F4F7F6] relative overflow-x-hidden">
+<body class="h-full flex min-h-screen bg-[#040e0d] relative overflow-x-hidden selection:bg-teal-500 selection:text-slate-950">
 
-    <!-- Subtle Medical Grid Background Pattern -->
-    <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#0f766e 1px, transparent 1px); background-size: 24px 24px;"></div>
+    <!-- Ambient Cold-Chain Background Glow across entire screen -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <img src="{{ asset('images/cargopharma-login.jpg') }}" alt="" class="w-full h-full object-cover object-center scale-105 filter blur-3xl opacity-20">
+        <div class="absolute inset-0 bg-[#040e0d]/85"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#040e0d] via-[#040e0d]/90 to-transparent"></div>
+    </div>
 
-    <div class="w-full max-w-md my-auto space-y-5 relative z-10">
+    <div class="relative z-10 flex-1 flex flex-col lg:flex-row min-h-screen">
         
-        <!-- Brand Header -->
-        <div class="text-center space-y-2">
-            <div class="inline-flex w-12 h-12 rounded-2xl bg-teal-600 text-white items-center justify-center shadow-lg shadow-teal-900/10 ring-4 ring-teal-50 mb-1">
-                <i data-lucide="shield-plus" class="w-6 h-6"></i>
+        <!-- LEFT COLUMN: AUTH FORM (Glassmorphic Cold-Chain Theme - No White Background) -->
+        <div class="w-full lg:w-1/2 flex flex-col justify-between p-6 sm:p-12 lg:p-16 z-10 bg-[#051615]/95 lg:bg-[#051615]/85 backdrop-blur-2xl border-r border-teal-900/30">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-teal-500 text-slate-950 flex items-center justify-center shadow-lg shadow-teal-500/20 font-bold">
+                    <i data-lucide="shield-plus" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-white text-lg tracking-tight">CargoPharma</span>
+                    <span class="block text-[10px] text-teal-400 font-mono font-semibold uppercase tracking-wider">Cold-Chain Visibility</span>
+                </div>
             </div>
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">CargoPharma</h1>
-                <p class="text-xs text-teal-800 font-medium">Biopharmaceutical Cold-Chain Telemetry System</p>
-            </div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Bio Farma &bull; WHO &amp; UNICEF Mandate</span>
-            </div>
-        </div>
 
-        <!-- Standard Enterprise Login Form -->
-        <div class="rounded-xl bg-white border border-slate-200/90 shadow-sm overflow-hidden">
-            <div class="h-1 bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-700"></div>
-            
-            <div class="p-6 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-sm font-bold text-slate-900">Sign in to Operations Portal</h2>
-                        <p class="text-[11px] text-slate-500">Enter your official enterprise credentials</p>
-                    </div>
-                    <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i>
+            <!-- Form Content Box -->
+            <div class="w-full max-w-sm mx-auto my-8 space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-tight">Masuk ke Portal</h2>
+                    <p class="text-xs text-teal-200/70 mt-1">Masuk dengan kredensial akun CargoPharma Anda.</p>
                 </div>
 
                 @if($errors->any())
-                <div class="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
-                    <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-rose-600 mt-0.5"></i>
+                <div class="p-3 rounded-xl bg-rose-950/60 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-rose-400"></i>
                     <span>{{ $errors->first() }}</span>
                 </div>
                 @endif
@@ -57,94 +53,121 @@
                 <form method="POST" action="{{ route('login.post') }}" class="space-y-4 text-xs">
                     @csrf
                     <div>
-                        <label class="block font-medium text-slate-700 mb-1">Official Email Address</label>
+                        <label class="block font-medium text-slate-300 mb-1.5">Email</label>
                         <div class="relative">
-                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-                            <input type="email" name="email" value="{{ old('email') }}" placeholder="name@cargotrace.com" required 
-                                class="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600">
+                            <i data-lucide="mail" class="w-4 h-4 text-teal-400/80 absolute left-3 top-2.5"></i>
+                            <input type="email" name="email" value="{{ old('email') }}" placeholder="nama@cargopharma.com" required autofocus
+                                class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-teal-800/70 bg-[#0A2624]/80 text-white text-xs placeholder-teal-600/70 focus:outline-none focus:border-teal-400 focus:bg-[#0C2D2B] focus:ring-1 focus:ring-teal-400/50 transition-all">
                         </div>
                     </div>
 
                     <div>
-                        <div class="flex items-center justify-between mb-1">
-                            <label class="font-medium text-slate-700">Account Password</label>
-                        </div>
+                        <label class="block font-medium text-slate-300 mb-1.5">Kata Sandi</label>
                         <div class="relative">
-                            <i data-lucide="key" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-                            <input type="password" id="password-field" name="password" placeholder="Enter account password" required 
-                                class="w-full pl-9 pr-10 py-2 rounded-lg border border-slate-200 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600">
-                            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2 text-slate-400 hover:text-slate-600 focus:outline-none" title="Lihat/Sembunyikan Password">
+                            <i data-lucide="lock" class="w-4 h-4 text-teal-400/80 absolute left-3 top-2.5"></i>
+                            <input type="password" id="password-field" name="password" placeholder="••••••••" required 
+                                class="w-full pl-9 pr-9 py-2.5 rounded-xl border border-teal-800/70 bg-[#0A2624]/80 text-white text-xs placeholder-teal-600/70 focus:outline-none focus:border-teal-400 focus:bg-[#0C2D2B] focus:ring-1 focus:ring-teal-400/50 transition-all">
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-3 text-teal-400/80 hover:text-teal-200 focus:outline-none" title="Lihat/Sembunyikan">
                                 <i id="eye-icon" data-lucide="eye" class="w-4 h-4"></i>
                             </button>
                         </div>
-                        <div class="mt-1 flex items-center justify-between text-[11px] text-slate-500">
-                            <span>Password default: <code class="font-mono font-semibold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">password</code></span>
-                            <span class="text-slate-400 text-[10px]">Tersedia juga: <code>admin</code></span>
-                        </div>
                     </div>
 
-                    <div class="flex items-center justify-between text-slate-600 text-xs">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="remember" class="rounded border-slate-300 text-teal-600 focus:ring-0">
-                            <span>Keep me signed in</span>
+                    <div class="flex items-center justify-between text-xs text-slate-300 pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" name="remember" class="rounded border-teal-700 bg-[#0A2624] text-teal-500 focus:ring-0">
+                            <span>Ingat saya</span>
                         </label>
-                        <span class="text-slate-400 text-[11px] font-mono">TLS 256-bit Encrypted</span>
                     </div>
 
-                    <button type="submit" class="w-full py-2.5 px-4 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs shadow-xs transition-all flex items-center justify-center gap-2">
-                        <span>Authenticate &amp; Access Dashboard</span>
-                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-950/60 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <span>Masuk</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </button>
                 </form>
+
+                @if(app()->environment('local'))
+                <!-- Quick Demo Login -->
+                <div class="pt-4 border-t border-teal-900/60 text-center space-y-2">
+                    <span class="text-[10px] text-teal-400/80 block font-semibold uppercase tracking-wider font-mono">Akses Cepat (Demo):</span>
+                    <div class="flex items-center justify-center gap-2">
+                        <a href="{{ route('login.quick', 'admin') }}" class="px-3 py-1.5 rounded-lg bg-[#0A2624] hover:bg-teal-900/70 text-teal-100 hover:text-white font-semibold text-xs transition-colors border border-teal-800/60 flex items-center gap-1.5">
+                            <i data-lucide="shield" class="w-3.5 h-3.5 text-teal-400"></i>
+                            <span>Admin</span>
+                        </a>
+                        <a href="{{ route('login.quick', 'operator') }}" class="px-3 py-1.5 rounded-lg bg-[#0A2624] hover:bg-teal-900/70 text-teal-100 hover:text-white font-semibold text-xs transition-colors border border-teal-800/60 flex items-center gap-1.5">
+                            <i data-lucide="activity" class="w-3.5 h-3.5 text-teal-400"></i>
+                            <span>Operator</span>
+                        </a>
+                        <a href="{{ route('login.quick', 'customer') }}" class="px-3 py-1.5 rounded-lg bg-[#0A2624] hover:bg-teal-900/70 text-teal-100 hover:text-white font-semibold text-xs transition-colors border border-teal-800/60 flex items-center gap-1.5">
+                            <i data-lucide="user" class="w-3.5 h-3.5 text-teal-400"></i>
+                            <span>Customer</span>
+                        </a>
+                    </div>
+                </div>
+                @endif
             </div>
-            
-            <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span class="flex items-center gap-1.5">
-                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i> ISO/IEC 27001 Security Standard
-                </span>
-                <span class="font-mono text-slate-400">v1.4.0</span>
+
+            <!-- Footer -->
+            <div class="text-xs text-teal-400/50 text-center sm:text-left">
+                &copy; {{ date('Y') }} CargoPharma. Sistem Distribusi Rantai Dingin Farmasi.
             </div>
         </div>
 
-        <!-- Authorized Enterprise Accounts (Manual Typing Reference) -->
-        <div class="rounded-xl bg-white border border-slate-200/90 p-4 shadow-xs space-y-3">
-            <div class="flex items-center justify-between text-xs font-semibold text-slate-700">
-                <span class="flex items-center gap-1.5 text-teal-800">
-                    <i data-lucide="key-round" class="w-4 h-4 text-teal-600"></i>
-                    <span>Akun Sistem (Ketik Manual)</span>
-                </span>
-                <span class="text-[11px] font-mono text-slate-500">Password: <strong class="text-teal-700">password</strong></span>
+        <!-- RIGHT COLUMN: VISUAL HERO SHOWCASE -->
+        <div class="w-full lg:w-1/2 relative bg-[#040e0d] flex flex-col justify-between p-8 sm:p-12 overflow-hidden min-h-[420px] lg:min-h-screen">
+            <!-- Background Image with Seamless Vignette & Gradients -->
+            <div class="absolute inset-0 z-0">
+                <img src="{{ asset('images/cargopharma-login.jpg') }}" alt="CargoPharma Cold-Chain" 
+                    class="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-1000 ease-out">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#040e0d] via-transparent to-[#040e0d]/50"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#051615] via-transparent to-black/40"></div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
-                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200/60 space-y-0.5">
-                    <div class="font-semibold text-slate-800 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-teal-600"></span> Admin
-                    </div>
-                    <div class="font-mono text-slate-600 text-[10px] select-all font-medium">admin@cargotrace.com</div>
-                    <div class="text-[9px] text-slate-400">Bio Farma HQ</div>
-                </div>
-                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200/60 space-y-0.5">
-                    <div class="font-semibold text-slate-800 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Operator
-                    </div>
-                    <div class="font-mono text-slate-600 text-[10px] select-all font-medium">operator@cargotrace.com</div>
-                    <div class="text-[9px] text-slate-400">Cold-Chain Logistics</div>
-                </div>
-                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200/60 space-y-0.5">
-                    <div class="font-semibold text-slate-800 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span> Consignee
-                    </div>
-                    <div class="font-mono text-slate-600 text-[10px] select-all font-medium">customer@unicef.org</div>
-                    <div class="text-[9px] text-slate-400">UNICEF Supply Div.</div>
-                </div>
-            </div>
-            <p class="text-[10px] text-slate-400 text-center">Silakan ketik email &amp; password di atas ke dalam form (tidak ada tombol 1-klik).</p>
-        </div>
 
-        <!-- Footer / Security Disclosure -->
-        <div class="text-center space-y-1 text-slate-400 text-[11px]">
-            <p>Protected biopharmaceutical network. Unauthorized access is strictly logged.</p>
-            <p class="text-[10px]">PT Bio Farma (Persero) &bull; Global Cold-Chain Visibility Division</p>
+            <!-- Top Pill Indicator -->
+            <div class="relative z-10 flex justify-between items-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-teal-500/30 text-teal-300 text-xs font-semibold shadow-lg">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Telemetri Rantai Dingin Aktif (-70°C ~ 8°C)</span>
+                </div>
+
+                <div class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-teal-900/70 backdrop-blur-md border border-teal-400/30 text-teal-200 text-xs font-mono">
+                    <i data-lucide="plane" class="w-3.5 h-3.5 text-teal-300"></i>
+                    <span>Bio Farma Global Network</span>
+                </div>
+            </div>
+
+            <!-- Bottom Caption & Metrics Showcase -->
+            <div class="relative z-10 space-y-4 pt-16 lg:pt-0">
+                <div class="space-y-2 max-w-lg">
+                    <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase font-mono bg-teal-500/20 text-teal-300 border border-teal-400/30">
+                        Presisi Distribusi Vaksin
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
+                        Visibilitas Real-time Logistik Rantai Dingin Global
+                    </h2>
+                    <p class="text-xs sm:text-sm text-teal-100/80 leading-relaxed">
+                        Integritas termal presisi tinggi untuk kargo vaksin, obat-obatan esensial, dan produk biologi lintas benua.
+                    </p>
+                </div>
+
+                <!-- Feature Highlights Badges -->
+                <div class="grid grid-cols-3 gap-2.5 pt-2 max-w-md">
+                    <div class="p-2.5 rounded-xl bg-slate-900/70 backdrop-blur-md border border-teal-500/30 text-center">
+                        <span class="block text-xs font-bold font-mono text-emerald-400">-70°C &bull; 2°-8°C</span>
+                        <span class="text-[10px] text-slate-300 font-medium">Ultra-Cold Storage</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-900/70 backdrop-blur-md border border-teal-500/30 text-center">
+                        <span class="block text-xs font-bold font-mono text-teal-300">100% Validated</span>
+                        <span class="text-[10px] text-slate-300 font-medium">WHO GDP Compliant</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-900/70 backdrop-blur-md border border-teal-500/30 text-center">
+                        <span class="block text-xs font-bold font-mono text-cyan-300">Multimodal</span>
+                        <span class="text-[10px] text-slate-300 font-medium">Udara, Darat &amp; Laut</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>

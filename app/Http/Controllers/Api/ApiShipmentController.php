@@ -35,6 +35,7 @@ class ApiShipmentController extends Controller
         $user = $request->user();
         $query = Shipment::with(['carrier', 'origin', 'destination', 'customer', 'items']);
 
+        // Consignee scoped to own consignments
         if ($user->isCustomer()) {
             $query->where('customer_id', $user->id);
         }
@@ -59,7 +60,7 @@ class ApiShipmentController extends Controller
     {
         $user = $request->user();
         if ($user->isCustomer()) {
-            return response()->json(['status' => 'error', 'message' => 'Forbidden: Customers cannot create consignments.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: Consignees are not authorized to create consignments.'], 403);
         }
 
         $validated = $request->validate([
@@ -71,7 +72,7 @@ class ApiShipmentController extends Controller
             'cargo_type' => 'required|string',
             'target_temp_min' => 'required|numeric',
             'target_temp_max' => 'required|numeric|gt:target_temp_min',
-            'total_weight_kg' => 'required|numeric',
+            'total_weight_kg' => 'required|numeric|min:1',
             'total_volume_cbm' => 'nullable|numeric',
             'expected_departure' => 'required|date',
             'expected_arrival' => 'required|date|after:expected_departure',
@@ -86,7 +87,7 @@ class ApiShipmentController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Shipment successfully created.',
-            'data' => $shipment->load(['carrier', 'origin', 'destination']),
+            'data' => $shipment->load(['carrier', 'origin', 'destination', 'customer']),
         ], 201);
     }
 
@@ -100,8 +101,9 @@ class ApiShipmentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
+        // IDOR Prevention: Consignee can only view own shipment
         if ($user->isCustomer() && $shipment->customer_id !== $user->id) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized to view this shipment.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: You are unauthorized to access this consignment.'], 403);
         }
 
         return response()->json([
@@ -114,7 +116,7 @@ class ApiShipmentController extends Controller
     {
         $user = $request->user();
         if ($user->isCustomer()) {
-            return response()->json(['status' => 'error', 'message' => 'Forbidden.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: Consignees cannot modify shipment details.'], 403);
         }
 
         $shipment = Shipment::find($id);
@@ -144,7 +146,7 @@ class ApiShipmentController extends Controller
     {
         $user = $request->user();
         if (! $user->isAdmin()) {
-            return response()->json(['status' => 'error', 'message' => 'Only administrators can delete shipments.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: Only administrators can delete shipments.'], 403);
         }
 
         $shipment = Shipment::find($id);
@@ -169,8 +171,9 @@ class ApiShipmentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
         }
 
+        // IDOR Prevention
         if ($user->isCustomer() && $shipment->customer_id !== $user->id) {
-            return response()->json(['status' => 'error', 'message' => 'Forbidden.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: You cannot access tracking for this consignment.'], 403);
         }
 
         return response()->json([
@@ -183,7 +186,7 @@ class ApiShipmentController extends Controller
     {
         $user = $request->user();
         if ($user->isCustomer()) {
-            return response()->json(['status' => 'error', 'message' => 'Forbidden.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: Consignees cannot log tracking events.'], 403);
         }
 
         $shipment = Shipment::find($id);
@@ -197,6 +200,8 @@ class ApiShipmentController extends Controller
             'event_time' => 'nullable|date',
             'container_temperature' => 'nullable|numeric',
             'ambient_temperature' => 'nullable|numeric',
+            'recorded_lat' => 'nullable|numeric',
+            'recorded_lng' => 'nullable|numeric',
             'status_snapshot' => 'required|string',
             'description' => 'required|string',
         ]);
@@ -213,9 +218,15 @@ class ApiShipmentController extends Controller
     // Exceptions
     public function getExceptions(Request $request, $id)
     {
+        $user = $request->user();
         $shipment = Shipment::find($id);
         if (! $shipment) {
             return response()->json(['status' => 'error', 'message' => 'Shipment not found.'], 404);
+        }
+
+        // IDOR Prevention: Consignee can only view exceptions for own shipments
+        if ($user->isCustomer() && $shipment->customer_id !== $user->id) {
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: You cannot access exceptions for this consignment.'], 403);
         }
 
         return response()->json([
@@ -228,7 +239,7 @@ class ApiShipmentController extends Controller
     {
         $user = $request->user();
         if ($user->isCustomer()) {
-            return response()->json(['status' => 'error', 'message' => 'Forbidden.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: Consignees cannot report internal logistics exceptions.'], 403);
         }
 
         $shipment = Shipment::find($id);
@@ -237,7 +248,7 @@ class ApiShipmentController extends Controller
         }
 
         $validated = $request->validate([
-            'exception_type' => 'required|string',
+            'exception_type' => 'required|string|in:TEMPERATURE_BREACH,WEATHER_DELAY,CUSTOMS_HOLD,PORT_CONGESTION,DAMAGED,MISROUTED,DOCUMENTATION_ISSUE',
             'severity' => 'required|string|in:LOW,MEDIUM,HIGH',
             'root_cause' => 'required|string',
         ]);
@@ -255,7 +266,7 @@ class ApiShipmentController extends Controller
     {
         $user = $request->user();
         if ($user->isCustomer()) {
-            return response()->json(['status' => 'error', 'message' => 'Forbidden.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: Consignees cannot resolve exceptions.'], 403);
         }
 
         $exception = ShipmentException::find($id);
@@ -265,7 +276,7 @@ class ApiShipmentController extends Controller
 
         $validated = $request->validate([
             'status' => 'required|string|in:INVESTIGATING,RESOLVED',
-            'resolution_notes' => 'required|string',
+            'resolution_notes' => 'required|string|min:5',
         ]);
 
         $exception = $this->exceptionService->resolveException($exception, $validated['status'], $validated['resolution_notes'], $user);
@@ -285,10 +296,17 @@ class ApiShipmentController extends Controller
 
     public function postCarrier(Request $request)
     {
+        $user = $request->user();
+        if (! $user->isAdmin()) {
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: Only administrators can register new carriers.'], 403);
+        }
+
         $validated = $request->validate([
             'code' => 'required|string|unique:carriers,code',
             'name' => 'required|string',
             'transport_type' => 'required|string|in:air,land,sea',
+            'contact_email' => 'nullable|email',
+            'contact_phone' => 'nullable|string',
         ]);
         $carrier = Carrier::create($validated);
 
@@ -302,6 +320,11 @@ class ApiShipmentController extends Controller
 
     public function postLocation(Request $request)
     {
+        $user = $request->user();
+        if (! $user->isAdmin()) {
+            return response()->json(['status' => 'error', 'message' => 'Forbidden: Only administrators can register new locations.'], 403);
+        }
+
         $validated = $request->validate([
             'code' => 'required|string|unique:locations,code',
             'name' => 'required|string',
@@ -310,6 +333,7 @@ class ApiShipmentController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'location_type' => 'required|string|in:facility,airport,transit_hub,cold_storage',
+            'has_cold_storage' => 'nullable|boolean',
         ]);
         $location = Location::create($validated);
 

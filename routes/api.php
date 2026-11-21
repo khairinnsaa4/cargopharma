@@ -20,6 +20,11 @@ Route::get('/currency-rates', [ApiExternalServiceController::class, 'getCurrency
 Route::get('/geocode', [ApiExternalServiceController::class, 'getGeocode']);
 Route::get('/news-feed', [ApiExternalServiceController::class, 'getNewsFeed']);
 Route::get('/weather', [ApiExternalServiceController::class, 'getWeather']);
+Route::get('/time', [ApiExternalServiceController::class, 'getTime']);
+Route::get('/time/hubs', [ApiExternalServiceController::class, 'getGlobalTimeHubs']);
+Route::get('/seaports', [ApiExternalServiceController::class, 'getSeaports']);
+Route::get('/aviation', [ApiExternalServiceController::class, 'getAviation']);
+Route::get('/route', [ApiExternalServiceController::class, 'getRoute']);
 
 // Protected API Endpoints (Requires Sanctum Bearer Token)
 Route::middleware('auth:sanctum')->group(function () {

@@ -3,52 +3,231 @@
 @section('content')
 <div class="space-y-6">
 
-    <!-- HEADER -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <!-- HEADER & QUICK SECTION NAVIGATION -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3 border-b border-slate-200">
         <div>
             <div class="flex items-center gap-2">
-                <h1 class="text-xl font-bold text-slate-900 tracking-tight">Global Logistics Radar</h1>
+                <h1 class="text-xl font-bold text-slate-900 tracking-tight">Radar Global</h1>
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live Telemetry Feeds
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live Telemetri
                 </span>
             </div>
-            <p class="text-xs text-slate-500">Konversi mata uang dua arah, peta cuaca satelit bandara dunia, dan intelijen logistik antar benua.</p>
+            <p class="text-xs text-slate-500 mt-0.5">Visibilitas cuaca negara transit vaksin, valas devisa, pelabuhan reefer, dan penerbangan internasional.</p>
         </div>
 
-        <div class="flex items-center gap-2">
-            <span class="text-xs text-slate-500 font-mono">Basis Data: <strong class="text-slate-800">Open-Meteo &amp; Live ER-API</strong></span>
+        <!-- Quick Section Jump Bar -->
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <button type="button" onclick="scrollToRadarSection('peta-cuaca-section')" class="px-3 py-1.5 rounded-lg bg-teal-600 text-white font-semibold flex items-center gap-1.5 shadow-2xs hover:bg-teal-700 transition-all cursor-pointer">
+                <i data-lucide="cloud-sun" class="w-3.5 h-3.5"></i>
+                <span>Peta Cuaca Tiap Negara</span>
+            </button>
+            <button type="button" onclick="scrollToRadarSection('konversi-valas-section')" class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+                <i data-lucide="coins" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>Valas</span>
+            </button>
+            <button type="button" onclick="scrollToRadarSection('world-clock-section')" class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>Jam Dunia</span>
+            </button>
+            <button type="button" onclick="scrollToRadarSection('armada-pelabuhan-section')" class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+                <i data-lucide="plane-takeoff" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>Armada &amp; Pelabuhan</span>
+            </button>
+            <button type="button" onclick="scrollToRadarSection('routing-section')" class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+                <i data-lucide="navigation" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>Kalkulator Rute</span>
+            </button>
+            <button type="button" onclick="scrollToRadarSection('news-section')" class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+                <i data-lucide="newspaper" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>Berita PBB</span>
+            </button>
         </div>
     </div>
 
-    <!-- 1. SIMPLIFIED TWO-WAY CURRENCY CONVERTER -->
-    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs p-6 space-y-5">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-4">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100 shrink-0">
-                    <i data-lucide="coins" class="w-4 h-4"></i>
+    <!-- 1. INTERACTIVE GLOBAL COUNTRY & HUB WEATHER MAP (TOP HERO SECTION) -->
+    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs overflow-hidden" id="peta-cuaca-section">
+        <!-- Weather Map Header & Controls -->
+        <div class="p-3.5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 bg-slate-50/50">
+            <!-- Left: Title & Continent Filters -->
+            <div class="flex flex-wrap items-center gap-2">
+                <div class="flex items-center gap-2 mr-1">
+                    <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100 shrink-0">
+                        <i data-lucide="cloud-sun" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 leading-tight">Peta Cuaca Tiap Negara</h3>
+                        <span class="text-[10px] text-teal-700 font-mono font-medium">{{ count($globalWeatherHubs) }} Negara &amp; Hub Internasional</span>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-sm font-bold text-slate-900">Konverter Mata Uang Bebas Pilih (Dua Arah)</h3>
-                    <p class="text-xs text-slate-500">Pilih negara asal dan negara tujuan untuk konversi instan</p>
+
+                <!-- Continent Filter Pills -->
+                <div class="inline-flex items-center rounded-lg bg-slate-200/70 p-0.5 text-xs font-semibold">
+                    <button type="button" onclick="filterWeatherContinent('ALL')" id="wx-btn-ALL"
+                        class="wx-tab-btn px-2.5 py-1 rounded-md bg-teal-600 text-white shadow-xs transition-all flex items-center gap-1 cursor-pointer">
+                        <span>🌐 Semua</span>
+                    </button>
+                    <button type="button" onclick="filterWeatherContinent('Asia')" id="wx-btn-Asia"
+                        class="wx-tab-btn px-2.5 py-1 rounded-md text-slate-700 hover:text-slate-900 transition-all flex items-center gap-1 cursor-pointer">
+                        <span>🌏 Asia</span>
+                    </button>
+                    <button type="button" onclick="filterWeatherContinent('Middle East')" id="wx-btn-Middle-East"
+                        class="wx-tab-btn px-2.5 py-1 rounded-md text-slate-700 hover:text-slate-900 transition-all flex items-center gap-1 cursor-pointer">
+                        <span>🏜️ Timur Tengah</span>
+                    </button>
+                    <button type="button" onclick="filterWeatherContinent('Europe')" id="wx-btn-Europe"
+                        class="wx-tab-btn px-2.5 py-1 rounded-md text-slate-700 hover:text-slate-900 transition-all flex items-center gap-1 cursor-pointer">
+                        <span>🌍 Eropa</span>
+                    </button>
+                    <button type="button" onclick="filterWeatherContinent('Africa')" id="wx-btn-Africa"
+                        class="wx-tab-btn px-2.5 py-1 rounded-md text-slate-700 hover:text-slate-900 transition-all flex items-center gap-1 cursor-pointer">
+                        <span>🌍 Afrika</span>
+                    </button>
+                    <button type="button" onclick="filterWeatherContinent('Americas')" id="wx-btn-Americas"
+                        class="wx-tab-btn px-2.5 py-1 rounded-md text-slate-700 hover:text-slate-900 transition-all flex items-center gap-1 cursor-pointer">
+                        <span>🌎 Amerika</span>
+                    </button>
                 </div>
             </div>
-            <span class="text-[11px] font-mono text-slate-400">Sinkronisasi: {{ $currencyData['last_updated'] ?? date('d M Y') }}</span>
+
+            <!-- Right: Country Dropdown Selector & Reset View -->
+            <div class="flex items-center gap-2">
+                <select id="airport-weather-selector" onchange="focusAirportOnMap(this.value)" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:border-teal-600 shadow-2xs max-w-[240px] sm:max-w-xs truncate">
+                    <option value="" selected>-- Pilih Negara / Bandara Dunia --</option>
+                    @foreach($globalWeatherHubs as $index => $wh)
+                        <option value="{{ $index }}" data-continent="{{ $wh['continent'] }}">
+                            {{ $wh['flag'] }} {{ $wh['country'] }} - {{ $wh['city'] }} ({{ $wh['emoji'] ?? '⛅' }} {{ round($wh['temp'], 1) }}°C)
+                        </option>
+                    @endforeach
+                </select>
+
+                <button type="button" onclick="resetWeatherMap()" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs flex items-center gap-1 transition-colors shadow-2xs shrink-0" title="Pusatkan Seluruh Dunia">
+                    <i data-lucide="maximize" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <span class="hidden sm:inline">Pusatkan</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Weather Map Container (100% Full Width) with Floating On-Demand Detail Drawer -->
+        <div class="relative w-full h-[520px] rounded-b-xl overflow-hidden bg-slate-100">
+            <!-- Full Width Interactive Leaflet Map -->
+            <div id="weather-interactive-map" class="w-full h-full z-0"></div>
+
+            <!-- Floating Pan & Navigation D-Pad Controls -->
+            <div class="absolute top-3 left-14 z-[400] flex items-center gap-1 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-lg p-1 shadow-md">
+                <span class="text-[10px] font-bold text-slate-500 uppercase px-1.5 hidden sm:inline">Geser:</span>
+                <button type="button" onclick="panWeatherMap(0, -180)" title="Geser ke Atas"
+                    class="w-7 h-7 rounded bg-slate-100 hover:bg-teal-600 hover:text-white text-slate-700 flex items-center justify-center transition-colors cursor-pointer text-xs font-bold">
+                    <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+                </button>
+                <button type="button" onclick="panWeatherMap(0, 180)" title="Geser ke Bawah"
+                    class="w-7 h-7 rounded bg-slate-100 hover:bg-teal-600 hover:text-white text-slate-700 flex items-center justify-center transition-colors cursor-pointer text-xs font-bold">
+                    <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
+                </button>
+                <button type="button" onclick="panWeatherMap(-180, 0)" title="Geser ke Kiri"
+                    class="w-7 h-7 rounded bg-slate-100 hover:bg-teal-600 hover:text-white text-slate-700 flex items-center justify-center transition-colors cursor-pointer text-xs font-bold">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                </button>
+                <button type="button" onclick="panWeatherMap(180, 0)" title="Geser ke Kanan"
+                    class="w-7 h-7 rounded bg-slate-100 hover:bg-teal-600 hover:text-white text-slate-700 flex items-center justify-center transition-colors cursor-pointer text-xs font-bold">
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+                <div class="h-4 w-px bg-slate-200 mx-0.5"></div>
+                <button type="button" onclick="resetWeatherMapCenter()" title="Pusatkan Peta (Reset)"
+                    class="px-2 h-7 rounded bg-teal-50 hover:bg-teal-600 hover:text-white text-teal-800 flex items-center gap-1 transition-colors cursor-pointer text-xs font-semibold">
+                    <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+                    <span class="text-[11px] hidden sm:inline">Pusat</span>
+                </button>
+            </div>
+
+            <!-- Floating Hint Badge (Visible initially, hides when country is clicked) -->
+            <div id="weather-map-hint" class="absolute bottom-4 left-4 z-10 px-3.5 py-2 rounded-xl bg-slate-900/85 backdrop-blur-md text-white text-xs border border-white/20 shadow-lg pointer-events-none flex items-center gap-2">
+                <i data-lucide="info" class="w-4 h-4 text-teal-400 shrink-0"></i>
+                <span class="text-[11px]">Bisa digeser bebas (drag) ke atas/bawah/kiri/kanan atau klik pin cuaca untuk detail.</span>
+            </div>
+
+            <!-- Selected Country/Airport Floating Weather Drawer (Hidden on Initial Load, Appears ONLY on Click) -->
+            <div id="weather-detail-panel" class="hidden absolute top-4 right-4 z-20 w-80 sm:w-96 max-h-[480px] overflow-y-auto rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-2xl p-4 space-y-3 transition-all duration-300">
+                <!-- Header with Close Button -->
+                <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                    <div class="flex items-center gap-2.5">
+                        <span id="panel-flag" class="text-3xl">🇦🇪</span>
+                        <div>
+                            <h4 id="panel-country" class="text-sm font-bold text-slate-900 leading-snug">Uni Emirat Arab</h4>
+                            <span id="panel-city" class="text-[11px] text-slate-500 block leading-tight font-medium">Dubai Hub</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="panel-hub-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-teal-100 text-teal-800 border border-teal-200">DXB</span>
+                        <button type="button" onclick="closeWeatherPanel()" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-500 flex items-center justify-center transition-colors cursor-pointer" title="Tutup Detail">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Temperature & Condition Hero Box -->
+                <div class="p-3.5 rounded-xl bg-gradient-to-br from-slate-50 to-teal-50/40 border border-slate-200 shadow-2xs space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span id="panel-weather-emoji" class="text-3xl">☀️</span>
+                            <div>
+                                <span class="text-2xl font-black text-slate-900 font-mono block tracking-tight" id="panel-temp">30.7°C</span>
+                                <span class="text-xs font-bold text-teal-800" id="panel-condition">Cerah</span>
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Cuaca Real-Time
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 text-[11px] font-mono text-slate-600">
+                        <div>Sensasi: <strong class="text-slate-900 font-bold" id="panel-feels">32°C</strong></div>
+                        <div>Angin: <strong class="text-slate-900 font-bold" id="panel-wind">14 km/h</strong></div>
+                        <div>Kelembapan: <strong class="text-slate-900 font-bold" id="panel-humidity">45%</strong></div>
+                        <div>Kontinen: <strong class="text-slate-900 font-bold" id="panel-continent">Middle East</strong></div>
+                    </div>
+                </div>
+
+                <!-- Cold-Chain Threat Guidance -->
+                <div class="p-3 rounded-xl border bg-white space-y-1.5 text-xs shadow-2xs" id="panel-risk-box">
+                    <div class="flex items-center gap-1.5 font-bold text-[11px] text-slate-900">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                        <span id="panel-risk-title">Standar Termal Cold-Chain</span>
+                    </div>
+                    <p class="text-[11px] text-slate-700 leading-relaxed font-sans" id="panel-risk-desc">
+                        Suhu ambien dalam batas wajar penanganan standar farmasi.
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-1">
+                    <span>Live Open-Meteo API</span>
+                    <button type="button" onclick="closeWeatherPanel()" class="text-teal-700 font-semibold hover:underline cursor-pointer">Tutup [✕]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. TWO-WAY CURRENCY CONVERTER -->
+    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs p-5 space-y-4" id="konversi-valas-section">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100 shrink-0">
+                    <i data-lucide="coins" class="w-4 h-4"></i>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900">Konversi Valas</h3>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400">{{ $currencyData['last_updated'] ?? date('d M Y') }}</span>
         </div>
 
         <!-- Converter Controls Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-            <!-- From Currency & Amount (5 cols) -->
-            <div class="lg:col-span-5 p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
-                <div class="flex items-center justify-between">
-                    <label class="text-xs font-semibold text-slate-700">Mata Uang Asal</label>
-                    <span class="text-[10px] font-mono text-slate-400">Dari</span>
-                </div>
+            <!-- From Currency & Amount -->
+            <div class="lg:col-span-5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+                <span class="text-xs font-semibold text-slate-700 block">Dari</span>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <select id="currency-from" onchange="runConverter()" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white font-mono text-xs font-semibold text-slate-900 focus:outline-none focus:border-teal-600">
-                        <option value="IDR" data-symbol="Rp" data-rate="1" selected>🇮🇩 IDR - Rupiah Indonesia</option>
+                        <option value="IDR" data-symbol="Rp" data-rate="1" selected>🇮🇩 IDR</option>
                         @foreach($currencyData['all_currencies'] as $c)
                             <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}">
-                                {{ $c['flag'] }} {{ $c['code'] }} - {{ $c['name'] }}
+                                {{ $c['flag'] }} {{ $c['code'] }}
                             </option>
                         @endforeach
                     </select>
@@ -60,27 +239,24 @@
                 </div>
             </div>
 
-            <!-- Swap Button (2 cols) -->
+            <!-- Swap Button -->
             <div class="lg:col-span-2 flex justify-center">
-                <button type="button" onclick="swapCurrencies()" class="p-3 rounded-full bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-700 transition-all shadow-2xs hover:rotate-180 duration-300" title="Tukar Mata Uang">
+                <button type="button" onclick="swapCurrencies()" class="p-2.5 rounded-full bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-700 transition-all shadow-2xs hover:rotate-180 duration-300" title="Tukar">
                     <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
                 </button>
             </div>
 
-            <!-- To Currency & Result (5 cols) -->
-            <div class="lg:col-span-5 p-4 rounded-xl bg-teal-50/60 border border-teal-200 space-y-3">
-                <div class="flex items-center justify-between">
-                    <label class="text-xs font-semibold text-teal-900">Mata Uang Tujuan</label>
-                    <span class="text-[10px] font-mono text-teal-600">Hasil Konversi</span>
-                </div>
+            <!-- To Currency & Result -->
+            <div class="lg:col-span-5 p-3.5 rounded-xl bg-teal-50/60 border border-teal-200 space-y-2">
+                <span class="text-xs font-semibold text-teal-900 block">Ke</span>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
                     <select id="currency-to" onchange="runConverter()" class="w-full px-3 py-2 rounded-lg border border-teal-200 bg-white font-mono text-xs font-semibold text-slate-900 focus:outline-none focus:border-teal-600">
                         @foreach($currencyData['all_currencies'] as $c)
                             <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}" {{ $c['code'] === 'NGN' ? 'selected' : '' }}>
-                                {{ $c['flag'] }} {{ $c['code'] }} - {{ $c['name'] }}
+                                {{ $c['flag'] }} {{ $c['code'] }}
                             </option>
                         @endforeach
-                        <option value="IDR" data-symbol="Rp" data-rate="1">🇮🇩 IDR - Rupiah Indonesia</option>
+                        <option value="IDR" data-symbol="Rp" data-rate="1">🇮🇩 IDR</option>
                     </select>
 
                     <div class="p-2 rounded-lg bg-white border border-teal-200 text-right overflow-hidden">
@@ -95,113 +271,252 @@
         <!-- Exchange Rate Info Banner & Quick Hub Chips -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
             <div id="conversion-formula" class="font-mono text-slate-600 text-[11px]">
-                Kurs Acuan: 1 IDR = 0.07437 NGN | 1 NGN = Rp 13,45
+                1 IDR = 0.07437 NGN
             </div>
 
             <!-- Quick Currency Selection Chips -->
             <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
-                <span class="text-slate-400 mr-1">Tujuan Cepat:</span>
-                <button type="button" onclick="setQuickCurrency('NGN')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono">🇳🇬 NGN</button>
-                <button type="button" onclick="setQuickCurrency('USD')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono">🇺🇸 USD</button>
-                <button type="button" onclick="setQuickCurrency('AED')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono">🇦🇪 AED</button>
-                <button type="button" onclick="setQuickCurrency('EUR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono">🇪🇺 EUR</button>
-                <button type="button" onclick="setQuickCurrency('SAR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono">🇸🇦 SAR</button>
-                <button type="button" onclick="setQuickCurrency('KES')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono">🇰🇪 KES</button>
+                <button type="button" onclick="setQuickCurrency('NGN')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇳🇬 NGN</button>
+                <button type="button" onclick="setQuickCurrency('USD')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇺🇸 USD</button>
+                <button type="button" onclick="setQuickCurrency('AED')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇦🇪 AED</button>
+                <button type="button" onclick="setQuickCurrency('EUR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇪🇺 EUR</button>
+                <button type="button" onclick="setQuickCurrency('SAR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇸🇦 SAR</button>
+                <button type="button" onclick="setQuickCurrency('KES')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇰🇪 KES</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. INTERACTIVE GLOBAL AIRPORT WEATHER MAP -->
-    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs overflow-hidden">
-        <!-- Weather Map Header & Airport Selector -->
-        <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100 shrink-0">
-                    <i data-lucide="cloud-sun" class="w-4 h-4"></i>
+    <!-- 3. WORLD CLOCK -->
+    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs p-5 space-y-3" id="world-clock-section">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100 shrink-0">
+                    <i data-lucide="clock" class="w-4 h-4"></i>
                 </div>
-                <div>
-                    <h3 class="text-sm font-bold text-slate-900">Peta Radar Cuaca Real-Time Bandara Dunia</h3>
-                    <p class="text-xs text-slate-500">Pilih bandara tujuan atau klik marker pada peta untuk melihat suhu dan mitigasi risiko rantai dingin</p>
+                <h3 class="text-sm font-bold text-slate-900">Jam Dunia</h3>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400">Live</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3">
+            @foreach($globalTimeHubs as $h)
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/90 hover:border-teal-400 hover:bg-teal-50/20 transition-all space-y-1 group">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-slate-800 flex items-center gap-1.5 truncate">
+                        <span>{{ $h['flag'] }}</span>
+                        <span>{{ $h['city'] }}</span>
+                    </span>
+                    <span class="font-mono text-[9px] px-1 py-0.2 rounded bg-slate-200/70 text-slate-600 font-bold">
+                        {{ $h['code'] }}
+                    </span>
+                </div>
+                <div class="flex items-baseline justify-between pt-0.5">
+                    <div class="font-mono font-black text-base text-slate-900 group-hover:text-teal-700 tracking-tight transition-colors">
+                        {{ $h['time_short'] }}
+                    </div>
+                    <span class="text-[10px] font-mono text-slate-400 font-semibold">{{ $h['offset'] }}</span>
                 </div>
             </div>
+            @endforeach
+        </div>
+    </div>
 
-            <!-- Airport Dropdown Selector -->
+    <!-- 4. AIR CARGO RADAR & MARITIME SEAPORTS -->
+    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs overflow-hidden" id="armada-pelabuhan-section">
+        <div class="p-3.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/50">
             <div class="flex items-center gap-2">
-                <label class="text-xs font-semibold text-slate-600 shrink-0">Pilih Bandara:</label>
-                <select id="airport-weather-selector" onchange="focusAirportOnMap(this.value)" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800 focus:outline-none focus:border-teal-600">
-                    @foreach($globalWeatherHubs as $index => $wh)
-                        <option value="{{ $index }}" {{ $wh['hub_code'] === 'DXB' ? 'selected' : '' }}>
-                            {{ $wh['flag'] }} {{ $wh['hub_code'] }} - {{ $wh['city'] }} ({{ round($wh['temp'], 1) }}°C)
-                        </option>
-                    @endforeach
+                <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100 shrink-0">
+                    <i data-lucide="plane-takeoff" class="w-4 h-4"></i>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900">Armada &amp; Pelabuhan</h3>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="switchTelemetryTab('aviation')" id="tab-btn-aviation" 
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-600 text-white shadow-2xs border border-teal-700 transition-all flex items-center gap-1.5 cursor-pointer">
+                    <span>✈️ Penerbangan ({{ count($liveFlights) }})</span>
+                </button>
+                <button type="button" onclick="switchTelemetryTab('seaports')" id="tab-btn-seaports" 
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
+                    <span>⚓ Pelabuhan ({{ count($majorSeaports) }})</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- AVIATION TAB CONTENT -->
+        <div id="tab-content-aviation" class="p-5 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                @foreach($liveFlights as $flight)
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 hover:border-teal-400 hover:shadow-xs transition-all">
+                    <div class="flex items-center justify-between pb-1.5 border-b border-slate-200/80">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-sm">✈️</span>
+                            <span class="font-mono font-bold text-xs text-slate-900">{{ $flight['flight_number'] }}</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+                            {{ $flight['status'] }}
+                        </span>
+                    </div>
+
+                    <div class="space-y-0.5 text-xs">
+                        <div class="text-[11px] font-semibold text-slate-800 truncate">{{ $flight['carrier'] }}</div>
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-900 pt-0.5">
+                            <span>{{ $flight['origin'] }}</span>
+                            <span class="text-teal-600">&rarr;</span>
+                            <span>{{ $flight['destination'] }}</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-1.5 pt-1.5 border-t border-slate-200/80 text-[10px] font-mono text-center">
+                        <div class="bg-white p-1 rounded border border-slate-200">
+                            <span class="text-slate-400 block text-[8px]">ALT</span>
+                            <b class="text-slate-800">{{ number_format($flight['altitude_ft']) }}ft</b>
+                        </div>
+                        <div class="bg-white p-1 rounded border border-slate-200">
+                            <span class="text-slate-400 block text-[8px]">SPD</span>
+                            <b class="text-slate-800">{{ $flight['speed_knots'] }}kts</b>
+                        </div>
+                        <div class="bg-teal-50 p-1 rounded border border-teal-200">
+                            <span class="text-teal-700 block text-[8px]">SUHU</span>
+                            <b class="text-teal-900">{{ $flight['temp_sensor'] }}&deg;C</b>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- SEAPORTS TAB CONTENT -->
+        <div id="tab-content-seaports" class="p-5 hidden space-y-4">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                        <tr>
+                            <th class="py-2.5 px-3">LOCODE</th>
+                            <th class="py-2.5 px-3">Pelabuhan</th>
+                            <th class="py-2.5 px-3">Negara</th>
+                            <th class="py-2.5 px-3 text-center">Reefer</th>
+                            <th class="py-2.5 px-3 text-center">Kedalaman</th>
+                            <th class="py-2.5 px-3 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        @foreach($majorSeaports as $port)
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="py-2.5 px-3 font-mono font-bold text-teal-800">
+                                ⚓ {{ $port['locode'] }}
+                            </td>
+                            <td class="py-2.5 px-3 font-semibold text-slate-900">
+                                {{ $port['name'] }}
+                            </td>
+                            <td class="py-2.5 px-3">
+                                <span>{{ $port['flag'] }} {{ $port['country'] }}</span>
+                            </td>
+                            <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-800">
+                                {{ number_format($port['reefer_plugs']) }} plugs
+                            </td>
+                            <td class="py-2.5 px-3 text-center font-mono text-slate-600">
+                                {{ $port['water_depth_m'] }} m
+                            </td>
+                            <td class="py-2.5 px-3 text-center">
+                                @if($port['status'] === 'OPERATIONAL')
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">OPERASIONAL</span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">PADAT</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. ROUTING CALCULATOR -->
+    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs p-5 space-y-4" id="routing-section">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100 shrink-0">
+                    <i data-lucide="navigation" class="w-4 h-4"></i>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900">Kalkulator Rute</h3>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400">OSRM</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+            <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Asal</label>
+                <select id="route-calc-origin" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-xs text-slate-900 focus:outline-none focus:border-teal-600">
+                    <option value="-6.9006,107.5761" selected>🇮🇩 Bio Farma Bandung</option>
+                    <option value="-6.1256,106.6558">🇮🇩 Bandara Soetta Jakarta</option>
+                    <option value="-6.1017,106.8833">🇮🇩 Pelabuhan Tanjung Priok</option>
+                    <option value="25.2532,55.3657">🇦🇪 Bandara Dubai DXB</option>
                 </select>
             </div>
-        </div>
 
-        <!-- Weather Map Container & Live Card -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
-            <!-- Leaflet Map (3 cols) -->
-            <div class="lg:col-span-3 h-[420px] relative">
-                <div id="weather-interactive-map" class="w-full h-full z-0"></div>
+            <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Tujuan</label>
+                <select id="route-calc-dest" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-xs text-slate-900 focus:outline-none focus:border-teal-600">
+                    <option value="-6.1783,106.6319">🇮🇩 RSUD Tangerang</option>
+                    <option value="25.2532,55.3657" selected>🇦🇪 Bandara Dubai DXB</option>
+                    <option value="9.0068,7.2632">🇳🇬 NPHCDA Abuja</option>
+                    <option value="51.9547,4.1378">🇳🇱 Pelabuhan Rotterdam</option>
+                </select>
             </div>
 
-            <!-- Selected Airport Weather Card (1 col) -->
-            <div class="p-5 flex flex-col justify-between space-y-4 bg-slate-50/50" id="weather-detail-panel">
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span id="panel-flag" class="text-2xl">🇦🇪</span>
-                        <span id="panel-hub-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-teal-100 text-teal-800 border border-teal-200">DXB</span>
-                    </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-700 block mb-1">Moda</label>
+                <select id="route-calc-mode" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-xs font-semibold text-slate-900 focus:outline-none focus:border-teal-600">
+                    <option value="air" selected>✈️ Udara</option>
+                    <option value="land">🚚 Darat</option>
+                    <option value="sea">🚢 Laut</option>
+                </select>
+            </div>
 
-                    <div>
-                        <h4 id="panel-city" class="text-sm font-bold text-slate-900 leading-snug">Dubai (SkyPharma Hub)</h4>
-                        <p id="panel-country" class="text-xs text-slate-500">Uni Emirat Arab &bull; Timur Tengah</p>
-                    </div>
+            <div>
+                <button type="button" onclick="calculateInteractiveRoute()" id="btn-calc-route" 
+                    class="w-full py-2 px-3 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i data-lucide="navigation" class="w-4 h-4"></i>
+                    <span>Hitung Rute &amp; Navigasi</span>
+                </button>
+            </div>
+        </div>
 
-                    <!-- Temperature -->
-                    <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                        <div class="flex items-baseline justify-between">
-                            <span class="text-3xl font-black text-slate-900 font-mono" id="panel-temp">30.7°C</span>
-                            <span class="text-xs font-bold text-slate-700" id="panel-condition">Cerah</span>
-                        </div>
-                        <div class="text-[11px] text-slate-400 mt-1 font-mono flex items-center justify-between">
-                            <span>Sensasi: <strong class="text-slate-700" id="panel-feels">32°C</strong></span>
-                            <span>Angin: <strong class="text-slate-700" id="panel-wind">14 km/h</strong></span>
-                        </div>
-                    </div>
+        <!-- Result Box -->
+        <div id="route-calc-result" class="p-3.5 rounded-xl bg-teal-50/70 border border-teal-200 hidden flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
+            <div class="space-y-0.5">
+                <span class="text-[10px] font-bold text-teal-800 uppercase tracking-wider block">Hasil Navigasi Rute</span>
+                <div id="route-calc-summary" class="font-bold text-slate-900 text-sm">--</div>
+                <div id="route-calc-mode-label" class="text-[11px] text-slate-600">--</div>
+            </div>
+            <div class="flex items-center gap-4 text-right">
+                <div>
+                    <span class="text-[10px] text-slate-500 block">Jarak Tempuh</span>
+                    <span id="route-calc-distance" class="font-mono font-bold text-base text-teal-900">-- km</span>
                 </div>
-
-                <!-- Cold-Chain Threat Guidance -->
-                <div class="p-3 rounded-xl border bg-white space-y-1 text-xs" id="panel-risk-box">
-                    <div class="flex items-center gap-1.5 font-bold text-slate-800 text-[11px]">
-                        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-600"></i>
-                        <span id="panel-risk-title">Kondisi Termal Vaksin</span>
-                    </div>
-                    <p class="text-[11px] text-slate-600 leading-relaxed" id="panel-risk-desc">
-                        WASPADA PANAS: Paparan sinar matahari langsung di bandara dapat menaikkan suhu isolasi.
-                    </p>
+                <div>
+                    <span class="text-[10px] text-slate-500 block">Estimasi Durasi</span>
+                    <span id="route-calc-duration" class="font-mono font-bold text-base text-slate-900">--</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. SIMPLIFIED CONTINENTAL INTELLIGENCE -->
-    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs p-6 space-y-5">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100 shrink-0">
+    <!-- 6. SIMPLIFIED CONTINENTAL INTELLIGENCE -->
+    <div class="rounded-xl bg-white border border-slate-200/90 shadow-xs p-5 space-y-4" id="news-section">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100 shrink-0">
                     <i data-lucide="newspaper" class="w-4 h-4"></i>
                 </div>
-                <div>
-                    <h3 class="text-sm font-bold text-slate-900">Berita &amp; Regulasi Logistik Antar Benua</h3>
-                    <p class="text-xs text-slate-500">Pemberitahuan resmi bea cukai, izin jalur kargo vaksin, dan respon wabah per benua</p>
-                </div>
+                <h3 class="text-sm font-bold text-slate-900">Berita &amp; Peringatan Logistik PBB</h3>
             </div>
 
             <!-- Continent Filter Dropdown -->
             <div class="flex items-center gap-2">
-                <label class="text-xs font-semibold text-slate-600">Pilih Benua:</label>
-                <select id="continent-filter" onchange="filterNews(this.value)" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800 focus:outline-none focus:border-teal-600">
+                <select id="continent-filter" onchange="filterNews(this.value)" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800 focus:outline-none focus:border-teal-600">
                     <option value="all">Semua Benua (Global)</option>
                     <option value="Asia">Asia 🇮🇩🇸🇬</option>
                     <option value="Middle East">Timur Tengah 🇦🇪🇶🇦</option>
@@ -212,18 +527,18 @@
             </div>
         </div>
 
-        <!-- News Cards Grid (Simple & Digestible) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="radar-news-container">
+        <!-- News Cards Grid (Clean & Minimal) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="radar-news-container">
             @foreach($continentalNews as $continentKey => $newsList)
                 @foreach($newsList as $news)
-                <div class="radar-news-card p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-teal-400 hover:shadow-xs transition-all space-y-2 flex flex-col justify-between" data-continent="{{ $continentKey }}">
-                    <div class="space-y-2">
+                <div class="radar-news-card p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-teal-400 hover:shadow-xs transition-all flex flex-col justify-between space-y-2" data-continent="{{ $continentKey }}">
+                    <div class="space-y-1.5">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-xs font-semibold text-slate-700 flex items-center gap-1">
                                 <span>{{ $news['flag'] }}</span>
                                 <span>{{ $news['country'] }}</span>
                             </span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold border {{ $news['badge_color'] }}">
+                            <span class="px-1.5 py-0.2 rounded text-[9px] font-bold border {{ $news['badge_color'] }}">
                                 {{ $news['category'] }}
                             </span>
                         </div>
@@ -231,17 +546,12 @@
                         <h4 class="text-xs font-bold text-slate-900 leading-snug line-clamp-2">
                             {{ $news['title'] }}
                         </h4>
-
-                        <p class="text-[11px] text-slate-600 line-clamp-3 leading-relaxed">
-                            {{ $news['summary'] }}
-                        </p>
                     </div>
 
-                    <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] text-slate-400">
+                    <div class="pt-1.5 border-t border-slate-200/60 flex items-center justify-between text-[10px] text-slate-400">
                         <span>{{ $news['source'] }}</span>
-                        <a href="{{ $news['url'] }}" target="_blank" rel="noopener noreferrer" class="text-teal-700 hover:text-teal-900 font-bold inline-flex items-center gap-1">
-                            <span>Buka Rilis</span>
-                            <i data-lucide="external-link" class="w-3 h-3"></i>
+                        <a href="{{ $news['url'] }}" target="_blank" rel="noopener noreferrer" class="text-teal-700 hover:text-teal-900 font-bold inline-flex items-center gap-0.5">
+                            <span>Baca &rarr;</span>
                         </a>
                     </div>
                 </div>
@@ -264,7 +574,31 @@
     document.addEventListener("DOMContentLoaded", function () {
         initWeatherMap();
         runConverter();
+
+        if (window.location.hash) {
+            const targetId = window.location.hash.substring(1);
+            setTimeout(() => {
+                scrollToRadarSection(targetId);
+            }, 300);
+        }
     });
+
+    window.addEventListener('hashchange', function() {
+        if (window.location.hash) {
+            scrollToRadarSection(window.location.hash.substring(1));
+        }
+    });
+
+    function scrollToRadarSection(sectionId) {
+        const el = document.getElementById(sectionId);
+        const main = document.querySelector('main');
+        if (el && main) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (sectionId === 'peta-cuaca-section' && weatherMap) {
+                setTimeout(() => { weatherMap.invalidateSize(); }, 350);
+            }
+        }
+    }
 
     // 2. CONVERTER FUNCTIONS
     function runConverter() {
@@ -318,64 +652,137 @@
     function initWeatherMap() {
         weatherMap = L.map('weather-interactive-map', {
             zoomControl: true,
-            attributionControl: false
-        }).setView([20.0, 45.0], 2);
+            attributionControl: false,
+            dragging: true,
+            touchZoom: true,
+            scrollWheelZoom: true,
+            doubleClickZoom: true,
+            boxZoom: true,
+            tap: false,
+            keyboard: true,
+            inertia: true,
+            inertiaDeceleration: 3000
+        }).setView([22.0, 15.0], 2);
+
+        weatherMap.dragging.enable();
+        if (weatherMap.keyboard) weatherMap.keyboard.enable();
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap'
         }).addTo(weatherMap);
+
+        setTimeout(() => { weatherMap.invalidateSize(); }, 300);
+        window.addEventListener('resize', () => { weatherMap.invalidateSize(); });
 
         weatherHubs.forEach((hub, index) => {
             const markerColor = hub.risk_level === 'CRITICAL_HEAT' ? '#ef4444' : 
                                (hub.risk_level === 'ELEVATED_HEAT' ? '#f59e0b' : 
                                (hub.risk_level === 'FREEZE_RISK' ? '#06b6d4' : '#0d9488'));
 
-            // Custom HTML Label Marker on map
+            const emoji = hub.emoji || '⛅';
+
+            // Custom HTML Weather Icon Marker directly visible on map
             const customIcon = L.divIcon({
                 className: 'custom-weather-marker',
-                html: `<div style="background:${markerColor}; color:#fff; font-family:'Inter',sans-serif; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:12px; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.2); white-space:nowrap; cursor:pointer;">
-                        ${hub.flag} ${hub.hub_code} ${Math.round(hub.temp)}°C
+                html: `<div class="cursor-pointer flex items-center gap-1 px-2 py-0.5 rounded-full text-white font-mono font-bold text-[11px] shadow-md border-2 border-white hover:scale-115 transition-transform" style="background:${markerColor}; box-shadow:0 3px 6px rgba(0,0,0,0.3); white-space:nowrap;">
+                        <span class="text-xs">${emoji}</span>
+                        <span>${hub.flag}</span>
+                        <span>${Math.round(hub.temp)}°C</span>
                        </div>`,
-                iconSize: [60, 24],
-                iconAnchor: [30, 12]
+                iconSize: [68, 26],
+                iconAnchor: [34, 13]
             });
 
             const marker = L.marker([hub.lat, hub.lon], { icon: customIcon }).addTo(weatherMap);
 
             marker.bindPopup(`
-                <div style="font-family:'Inter',sans-serif; font-size:11px; padding:2px;">
-                    <strong style="font-size:13px; color:#0f172a;">${hub.flag} ${hub.city} (${hub.hub_code})</strong><br>
-                    <div style="font-size:15px; font-weight:bold; color:#0d9488; margin:4px 0;">${hub.temp}°C &bull; ${hub.condition}</div>
-                    <div>💧 Kelembapan: <b>${hub.humidity}%</b> | 💨 Angin: <b>${hub.wind_speed} km/h</b></div>
-                    <div style="margin-top:6px; padding:4px; background:#f8fafc; border-radius:4px; font-size:10px; color:#475569;">
-                        <b>Kondisi:</b> ${hub.cold_chain_guidance}
+                <div style="font-family:'Inter',sans-serif; font-size:11px; padding:3px; min-width:210px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; padding-bottom:4px; border-bottom:1px solid #e2e8f0;">
+                        <strong style="font-size:13px; color:#0f172a;">${hub.flag} ${hub.country}</strong>
+                        <span style="font-size:10px; font-weight:bold; padding:1px 5px; border-radius:4px; background:#f1f5f9; color:#475569;">${hub.hub_code}</span>
+                    </div>
+                    <div style="font-size:11px; color:#64748b; margin-bottom:4px;">${hub.city}</div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin:6px 0; background:#f8fafc; padding:6px; border-radius:8px;">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="font-size:22px;">${emoji}</span>
+                            <div>
+                                <div style="font-size:17px; font-weight:800; color:#0f172a;">${Math.round(hub.temp * 10) / 10}°C</div>
+                                <div style="font-size:10px; color:#0d9488; font-weight:600;">${hub.condition}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right; font-size:10px; color:#64748b; line-height:1.4;">
+                            <div>💧 <b>${hub.humidity}%</b></div>
+                            <div>💨 <b>${Math.round(hub.wind_speed)} km/h</b></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:6px; padding:5px 7px; background:#f0fdfa; border:1px solid #ccfbf1; border-radius:6px; font-size:10px; color:#0f766e; line-height:1.35;">
+                        <b>SOP Rantai Dingin:</b> ${hub.cold_chain_guidance}
                     </div>
                 </div>
-            `);
+            `, { className: 'cargopharma-popup' });
 
             marker.on('click', function() {
-                updateWeatherPanel(index);
-                document.getElementById('airport-weather-selector').value = index;
+                openWeatherPanel(index);
+                const sel = document.getElementById('airport-weather-selector');
+                if (sel) sel.value = index;
             });
 
             weatherMarkers.push(marker);
         });
 
-        // Set default to Dubai DXB
-        focusAirportOnMap(4);
+        // Initially: detail panel remains hidden, world map is fully visible!
     }
 
-    function focusAirportOnMap(index) {
+    window.openWeatherPanel = function(index) {
+        updateWeatherPanel(index);
+        const panel = document.getElementById('weather-detail-panel');
+        const hint = document.getElementById('weather-map-hint');
+        if (panel) panel.classList.remove('hidden');
+        if (hint) hint.classList.add('hidden');
+        if (window.lucide) lucide.createIcons();
+    };
+
+    window.closeWeatherPanel = function() {
+        const panel = document.getElementById('weather-detail-panel');
+        const hint = document.getElementById('weather-map-hint');
+        if (panel) panel.classList.add('hidden');
+        if (hint) hint.classList.remove('hidden');
+        const sel = document.getElementById('airport-weather-selector');
+        if (sel) sel.value = '';
+        if (weatherMap) weatherMap.closePopup();
+    };
+
+    window.panWeatherMap = function(dx, dy) {
+        if (weatherMap) {
+            weatherMap.panBy([dx, dy], { animate: true, duration: 0.35 });
+        }
+    };
+
+    window.resetWeatherMapCenter = function() {
+        if (weatherMap) {
+            weatherMap.setView([22.0, 15.0], 2, { animate: true });
+            closeWeatherPanel();
+        }
+    };
+
+    window.focusAirportOnMap = function(index) {
+        if (index === '' || index === null || typeof index === 'undefined') {
+            closeWeatherPanel();
+            return;
+        }
         const hub = weatherHubs[index];
         if (!hub || !weatherMap) return;
 
         weatherMap.flyTo([hub.lat, hub.lon], 5, { duration: 1.2 });
         if (weatherMarkers[index]) {
-            weatherMarkers[index].openPopup();
+            setTimeout(() => {
+                weatherMarkers[index].openPopup();
+            }, 300);
         }
 
-        updateWeatherPanel(index);
-    }
+        openWeatherPanel(index);
+    };
 
     function updateWeatherPanel(index) {
         const hub = weatherHubs[index];
@@ -383,19 +790,59 @@
 
         document.getElementById('panel-flag').textContent = hub.flag;
         document.getElementById('panel-hub-badge').textContent = hub.hub_code;
+        document.getElementById('panel-country').textContent = hub.country;
         document.getElementById('panel-city').textContent = hub.city;
-        document.getElementById('panel-country').textContent = `${hub.country} • ${hub.continent}`;
         document.getElementById('panel-temp').textContent = `${Math.round(hub.temp * 10) / 10}°C`;
         document.getElementById('panel-condition').textContent = hub.condition;
         document.getElementById('panel-feels').textContent = `${Math.round(hub.feels_like * 10) / 10}°C`;
         document.getElementById('panel-wind').textContent = `${Math.round(hub.wind_speed * 10) / 10} km/h`;
+        document.getElementById('panel-humidity').textContent = `${hub.humidity}%`;
+        document.getElementById('panel-continent').textContent = hub.continent;
+        document.getElementById('panel-weather-emoji').textContent = hub.emoji || '⛅';
 
         const riskBox = document.getElementById('panel-risk-box');
-        riskBox.className = `p-3 rounded-xl border bg-white space-y-1 text-xs ${hub.risk_badge}`;
+        riskBox.className = `p-3 rounded-xl border bg-white space-y-1.5 text-xs shadow-2xs ${hub.risk_badge}`;
         document.getElementById('panel-risk-desc').textContent = hub.cold_chain_guidance;
 
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     }
+
+    window.filterWeatherContinent = function(continent) {
+        document.querySelectorAll('.wx-tab-btn').forEach(btn => {
+            btn.classList.remove('bg-teal-600', 'text-white', 'shadow-xs');
+            btn.classList.add('text-slate-700');
+        });
+        const activeBtn = document.getElementById('wx-btn-' + (continent.replace(/\s+/g, '-')));
+        if (activeBtn) {
+            activeBtn.classList.remove('text-slate-700');
+            activeBtn.classList.add('bg-teal-600', 'text-white', 'shadow-xs');
+        }
+
+        const continentBounds = [];
+
+        weatherHubs.forEach((hub, idx) => {
+            const matches = (continent === 'ALL' || hub.continent === continent);
+            const marker = weatherMarkers[idx];
+            if (marker) {
+                if (matches) {
+                    marker.setOpacity(1.0);
+                    continentBounds.push([hub.lat, hub.lon]);
+                } else {
+                    marker.setOpacity(0.12);
+                }
+            }
+        });
+
+        if (continentBounds.length > 0 && weatherMap) {
+            weatherMap.fitBounds(L.latLngBounds(continentBounds), { padding: [50, 50], maxZoom: 5 });
+        }
+    };
+
+    window.resetWeatherMap = function() {
+        filterWeatherContinent('ALL');
+        closeWeatherPanel();
+        weatherMap.setView([22.0, 15.0], 2);
+    };
 
     // 4. CONTINENTAL NEWS FILTER FUNCTION
     function filterNews(continent) {
@@ -408,6 +855,82 @@
                 card.style.display = 'none';
             }
         });
+    }
+
+    // 5. TELEMETRY TAB SWITCHER (AVIATION / SEAPORTS)
+    function switchTelemetryTab(tab) {
+        const btnAv = document.getElementById('tab-btn-aviation');
+        const btnSea = document.getElementById('tab-btn-seaports');
+        const contentAv = document.getElementById('tab-content-aviation');
+        const contentSea = document.getElementById('tab-content-seaports');
+
+        if (tab === 'aviation') {
+            btnAv.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-600 text-white shadow-2xs border border-teal-700 transition-all flex items-center gap-1.5 cursor-pointer';
+            btnSea.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
+            contentAv.classList.remove('hidden');
+            contentSea.classList.add('hidden');
+        } else {
+            btnSea.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-600 text-white shadow-2xs border border-teal-700 transition-all flex items-center gap-1.5 cursor-pointer';
+            btnAv.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer';
+            contentSea.classList.remove('hidden');
+            contentAv.classList.add('hidden');
+        }
+    }
+
+    // 6. INTERACTIVE ROUTE CALCULATOR
+    async function calculateInteractiveRoute() {
+        const originVal = document.getElementById('route-calc-origin').value.split(',');
+        const destVal = document.getElementById('route-calc-dest').value.split(',');
+        const mode = document.getElementById('route-calc-mode').value;
+        const btn = document.getElementById('btn-calc-route');
+        const resBox = document.getElementById('route-calc-result');
+
+        btn.disabled = true;
+        btn.innerHTML = `<span class="animate-spin mr-1">🔄</span> Menghitung...`;
+
+        try {
+            const url = `{{ route('ajax.route') }}?lat1=${originVal[0]}&lng1=${originVal[1]}&lat2=${destVal[0]}&lng2=${destVal[1]}&mode=${mode}`;
+            const res = await fetch(url);
+            const data = await res.json();
+
+            if (data.success && data.route) {
+                const r = data.route;
+                resBox.classList.remove('hidden');
+                resBox.classList.add('flex');
+
+                const originSel = document.getElementById('route-calc-origin');
+                const destSel = document.getElementById('route-calc-dest');
+                const originText = originSel.options[originSel.selectedIndex].text.split('(')[0];
+                const destText = destSel.options[destSel.selectedIndex].text.split('(')[0];
+
+                document.getElementById('route-calc-summary').textContent = `${originText} ➔ ${destText}`;
+                
+                let modeLabel = '';
+                let durationText = '';
+                if (mode === 'air') {
+                    modeLabel = `✈️ Koridor Udara Global (Great-Circle Arc Navigation)`;
+                    durationText = `~${r.flight_duration_hours || '--'} Jam`;
+                } else if (mode === 'sea') {
+                    modeLabel = `🚢 Koridor Pelayaran Maritim (Maritime Sea Lanes)`;
+                    durationText = `~${r.transit_days || '--'} Hari`;
+                } else {
+                    modeLabel = `🚚 Rute Jalan Tol & Arteri (OSRM High-Speed Routing Engine)`;
+                    const hours = Math.floor((r.duration_minutes || 0) / 60);
+                    const mins = Math.round((r.duration_minutes || 0) % 60);
+                    durationText = hours > 0 ? `${hours}j ${mins}m` : `${mins} menit`;
+                }
+
+                document.getElementById('route-calc-mode-label').textContent = modeLabel;
+                document.getElementById('route-calc-distance').textContent = `${Number(r.distance_km || 0).toLocaleString('id-ID')} km`;
+                document.getElementById('route-calc-duration').textContent = durationText;
+            }
+        } catch (err) {
+            console.error('Route calculation failed:', err);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<i data-lucide="calculator" class="w-3.5 h-3.5 mr-1"></i> Hitung Rute & Navigasi`;
+            lucide.createIcons();
+        }
     }
 </script>
 @endpush

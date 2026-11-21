@@ -48,8 +48,8 @@ class ExceptionService
         Notification::create([
             'user_id' => $shipment->customer_id,
             'shipment_id' => $shipment->id,
-            'title' => "Incident Logged: {$exception->exception_type}",
-            'message' => "Shipment {$shipment->shipment_number} flagged for {$exception->exception_type} (Severity: {$exception->severity}). Cold-chain team is investigating.",
+            'title' => "Insiden Tercatat: {$exception->exception_type}",
+            'message' => "Pengiriman {$shipment->shipment_number} ditandai insiden {$exception->exception_type} (Tingkat: {$exception->severity}). Tim operasional rantai dingin sedang melakukan investigasi.",
             'type' => $exception->severity === 'HIGH' ? 'danger' : 'warning',
             'is_read' => false,
         ]);

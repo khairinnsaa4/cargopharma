@@ -9,22 +9,27 @@ use Illuminate\Support\Facades\Hash;
 
 class ApiAuthController extends Controller
 {
+    /**
+     * Public Consignee (Customer) Registration.
+     * Note: Admin and Operator accounts can only be provisioned by authorized Administrators.
+     */
     public function register(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
-            'role' => 'nullable|string|in:admin,operator,customer',
-            'phone' => 'nullable|string',
-            'organization' => 'nullable|string',
+            'phone' => 'nullable|string|max:50',
+            'organization' => 'nullable|string|max:255',
         ]);
 
+        // Security Enforcement: Public registration strictly creates customer (Consignee) role only.
+        // Role parameter supplied by client is strictly ignored to prevent privilege escalation.
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'] ?? 'customer',
+            'role' => 'customer',
             'phone' => $validated['phone'] ?? null,
             'organization' => $validated['organization'] ?? null,
         ]);
@@ -33,7 +38,7 @@ class ApiAuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'User account successfully registered.',
+            'message' => 'Consignee account successfully registered.',
             'data' => [
                 'user' => $user,
                 'token' => $token,
@@ -45,7 +50,7 @@ class ApiAuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -55,6 +60,13 @@ class ApiAuthController extends Controller
                 'status' => 'error',
                 'message' => 'Invalid email or password credentials.',
             ], 401);
+        }
+
+        if (! $user->is_active) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Forbidden: Your account has been deactivated by an administrator.',
+            ], 403);
         }
 
         $token = $user->createToken('cargopharma_api')->plainTextToken;

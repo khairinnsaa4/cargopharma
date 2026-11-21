@@ -12,7 +12,7 @@ class GeocodingService
 
     public function __construct()
     {
-        $this->nominatimUrl = 'https://nominatim.openstreetmap.org/search';
+        $this->nominatimUrl = config('services.geocoding.url', 'https://nominatim.openstreetmap.org/search');
     }
 
     /**

@@ -63,6 +63,13 @@ class ShipmentController extends Controller
             $query->where('carrier_id', $request->input('carrier_id'));
         }
 
+        if ($request->filled('transport_type')) {
+            $transportType = $request->input('transport_type');
+            $query->whereHas('carrier', function ($q) use ($transportType) {
+                $q->where('transport_type', $transportType);
+            });
+        }
+
         if ($request->filled('delay_only') && $request->boolean('delay_only')) {
             $query->where('is_delayed', true);
         }
@@ -79,7 +86,7 @@ class ShipmentController extends Controller
 
         // Customer authorization: can only view own shipment (Slide 5 & 13)
         if ($user->isCustomer() && $shipment->customer_id !== $user->id) {
-            abort(403, 'Unauthorized access: You are only permitted to inspect shipments assigned to your organization.');
+            abort(403, 'Akses tidak diizinkan: Anda hanya berhak memeriksa pengiriman yang ditugaskan ke organisasi Anda.');
         }
 
         $shipment->load([
@@ -103,13 +110,56 @@ class ShipmentController extends Controller
         $currentLng = $latestEvent?->recorded_lng ?? $shipment->origin->longitude;
         $weatherData = $this->weatherService->getWeatherByCoordinates((float) $currentLat, (float) $currentLng);
 
-        // Real-Time Currency Conversion for Customs & Cargo Insurance Valuation
+        // Currency Conversion for Customs & Cargo Insurance Valuation based strictly on actual items
         $currencyRates = $this->currencyService->getRates();
-        $totalVials = $shipment->items->sum('quantity_vials') ?: 50000;
+        $totalVials = (int) $shipment->items->sum('quantity_vials');
         $unitPriceUsd = 8.50; // International benchmark per nOPV2 10-dose vial
-        $declaredUsd = $totalVials * $unitPriceUsd;
-        $declaredIdr = $this->currencyService->convert($declaredUsd, 'USD', 'IDR');
-        $declaredEur = $this->currencyService->convert($declaredUsd, 'USD', 'EUR');
+        $declaredUsd = $totalVials > 0 ? ($totalVials * $unitPriceUsd) : 0.0;
+        $declaredIdr = $declaredUsd > 0 ? $this->currencyService->convert($declaredUsd, 'USD', 'IDR') : 0.0;
+        $declaredEur = $declaredUsd > 0 ? $this->currencyService->convert($declaredUsd, 'USD', 'EUR') : 0.0;
+
+        $firstItem = $shipment->items->first();
+        $mapData = [
+            'id' => $shipment->id,
+            'shipment_number' => $shipment->shipment_number,
+            'current_status' => $shipment->current_status,
+            'is_delayed' => (bool) $shipment->is_delayed,
+            'target_temp_min' => (float) $shipment->target_temp_min,
+            'target_temp_max' => (float) $shipment->target_temp_max,
+            'product_name' => $firstItem?->product_name ?? $shipment->cargo_type,
+            'batch_number' => $firstItem?->batch_number ?? 'N/A',
+            'quantity_vials' => $totalVials,
+            'carrier_name' => $shipment->carrier?->name ?? 'Carrier Partner',
+            'transport_type' => strtolower($shipment->carrier?->transport_type ?? 'air'),
+            'origin' => [
+                'name' => $shipment->origin?->name ?? 'Origin Hub',
+                'city' => $shipment->origin?->city ?? 'Origin',
+                'country' => $shipment->origin?->country ?? '',
+                'lat' => (float) ($shipment->origin?->latitude ?? 0),
+                'lng' => (float) ($shipment->origin?->longitude ?? 0),
+            ],
+            'destination' => [
+                'name' => $shipment->destination?->name ?? 'Destination Hub',
+                'city' => $shipment->destination?->city ?? 'Destination',
+                'country' => $shipment->destination?->country ?? '',
+                'lat' => (float) ($shipment->destination?->latitude ?? 0),
+                'lng' => (float) ($shipment->destination?->longitude ?? 0),
+            ],
+            'tracking_events' => $shipment->trackingEvents->map(function ($ev) {
+                return [
+                    'id' => $ev->id,
+                    'event_type' => $ev->event_type,
+                    'status_snapshot' => $ev->status_snapshot,
+                    'notes' => $ev->notes,
+                    'container_temperature' => $ev->container_temperature !== null ? (float) $ev->container_temperature : null,
+                    'lat' => $ev->recorded_lat !== null ? (float) $ev->recorded_lat : null,
+                    'lng' => $ev->recorded_lng !== null ? (float) $ev->recorded_lng : null,
+                    'location_name' => $ev->location?->name ?? 'Transit Checkpoint',
+                    'city' => $ev->location?->city ?? '',
+                    'formatted_time' => $ev->event_time ? $ev->event_time->format('d M Y, H:i') : '',
+                ];
+            })->values()->all(),
+        ];
 
         return view('shipments.show', compact(
             'shipment',
@@ -120,7 +170,8 @@ class ShipmentController extends Controller
             'currencyRates',
             'declaredUsd',
             'declaredIdr',
-            'declaredEur'
+            'declaredEur',
+            'mapData'
         ));
     }
 
@@ -128,7 +179,7 @@ class ShipmentController extends Controller
     {
         $user = Auth::user();
         if ($user->isCustomer()) {
-            abort(403, 'Customers are not permitted to register new consignments.');
+            abort(403, 'Pelanggan tidak diizinkan untuk mendaftarkan konsinyasi baru.');
         }
 
         $customers = User::where('role', 'customer')->get();
@@ -160,16 +211,26 @@ class ShipmentController extends Controller
             'expected_arrival' => 'required|date|after:expected_departure',
             'notes' => 'nullable|string',
 
-            // Items validation
-            'item_code' => 'required|string',
-            'product_name' => 'required|string',
-            'batch_number' => 'required|string',
-            'expiry_date' => 'required|date',
-            'quantity_vials' => 'required|integer|min:1',
-            'container_type' => 'required|string',
+            // Single item fallback
+            'item_code' => 'required_without:items|nullable|string',
+            'product_name' => 'required_without:items|nullable|string',
+            'batch_number' => 'required_without:items|nullable|string',
+            'expiry_date' => 'required_without:items|nullable|date',
+            'quantity_vials' => 'required_without:items|nullable|integer|min:1',
+            'container_type' => 'nullable|string',
+
+            // Multiple items support
+            'items' => 'nullable|array|min:1',
+            'items.*.item_code' => 'required_with:items|string',
+            'items.*.product_name' => 'required_with:items|string',
+            'items.*.batch_number' => 'required_with:items|string',
+            'items.*.expiry_date' => 'required_with:items|date',
+            'items.*.quantity_vials' => 'required_with:items|integer|min:1',
+            'items.*.doses_per_vial' => 'nullable|integer',
+            'items.*.container_type' => 'nullable|string',
         ]);
 
-        DB::transaction(function () use ($validated, $user, &$shipment) {
+        DB::transaction(function () use ($validated, $user, $request, &$shipment) {
             $shipment = Shipment::create([
                 'shipment_number' => strtoupper($validated['shipment_number']),
                 'customer_id' => $validated['customer_id'],
@@ -188,19 +249,35 @@ class ShipmentController extends Controller
                 'notes' => $validated['notes'] ?? null,
             ]);
 
-            ShipmentItem::create([
-                'shipment_id' => $shipment->id,
-                'item_code' => $validated['item_code'],
-                'product_name' => $validated['product_name'],
-                'batch_number' => $validated['batch_number'],
-                'expiry_date' => $validated['expiry_date'],
-                'quantity_vials' => $validated['quantity_vials'],
-                'container_type' => $validated['container_type'],
-            ]);
+            if (! empty($validated['items']) && is_array($validated['items'])) {
+                foreach ($validated['items'] as $item) {
+                    ShipmentItem::create([
+                        'shipment_id' => $shipment->id,
+                        'item_code' => $item['item_code'],
+                        'product_name' => $item['product_name'],
+                        'batch_number' => $item['batch_number'],
+                        'expiry_date' => $item['expiry_date'],
+                        'quantity_vials' => $item['quantity_vials'],
+                        'doses_per_vial' => $item['doses_per_vial'] ?? 10,
+                        'container_type' => $item['container_type'] ?? 'Envirotainer RKN e1 Active Cold Unit',
+                    ]);
+                }
+            } else {
+                ShipmentItem::create([
+                    'shipment_id' => $shipment->id,
+                    'item_code' => $validated['item_code'],
+                    'product_name' => $validated['product_name'],
+                    'batch_number' => $validated['batch_number'],
+                    'expiry_date' => $validated['expiry_date'],
+                    'quantity_vials' => $validated['quantity_vials'],
+                    'doses_per_vial' => (int) $request->input('doses_per_vial', 10),
+                    'container_type' => $validated['container_type'] ?? 'Envirotainer RKN e1 Active Cold Unit',
+                ]);
+            }
         });
 
         return redirect()->route('shipments.show', $shipment->id)
-            ->with('success', "Consignment {$shipment->shipment_number} successfully registered into Bio Farma Cold Chain Registry.");
+            ->with('success', "Konsinyasi {$shipment->shipment_number} berhasil didaftarkan ke dalam Registri Rantai Dingin Bio Farma.");
     }
 
     public function updateStatus(Request $request, Shipment $shipment)
@@ -217,6 +294,6 @@ class ShipmentController extends Controller
 
         $this->shipmentService->updateStatus($shipment, $validated['new_status'], $user, $validated['notes'] ?? null);
 
-        return back()->with('success', "Shipment status updated to {$validated['new_status']}.");
+        return back()->with('success', "Status pengiriman berhasil diperbarui menjadi {$validated['new_status']}.");
     }
 }

@@ -38,6 +38,6 @@ class TrackingController extends Controller
 
         $this->trackingService->recordEvent($shipment, $validated, $user);
 
-        return back()->with('success', 'New cold chain tracking checkpoint logged.');
+        return back()->with('success', 'Titik pemeriksaan pelacakan rantai dingin baru berhasil dicatat.');
     }
 }

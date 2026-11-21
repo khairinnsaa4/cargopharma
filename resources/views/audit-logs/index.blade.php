@@ -5,12 +5,9 @@
 
     <!-- HEADER -->
     <div class="pb-3 border-b border-slate-200 flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-slate-900 tracking-tight">System Audit Trail</h1>
-            <p class="text-xs text-slate-500">Immutable governance ledger tracking state transitions, user activities, and data updates.</p>
-        </div>
-        <span class="text-xs font-mono text-slate-500 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
-            Admin Clearance Only
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight">Audit Log</h1>
+        <span class="text-xs font-mono text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+            Admin
         </span>
     </div>
 
@@ -20,13 +17,13 @@
             <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-medium">
                     <tr>
-                        <th class="py-3 px-4 font-semibold">Timestamp</th>
-                        <th class="py-3 px-4 font-semibold">Actor</th>
-                        <th class="py-3 px-4 font-semibold">Action Event</th>
-                        <th class="py-3 px-4 font-semibold">Entity Type</th>
-                        <th class="py-3 px-4 font-semibold">Entity ID</th>
-                        <th class="py-3 px-4 font-semibold">Client IP</th>
-                        <th class="py-3 px-4 font-semibold">Audit Payload</th>
+                        <th class="py-3 px-4 font-semibold">Waktu</th>
+                        <th class="py-3 px-4 font-semibold">Pengguna</th>
+                        <th class="py-3 px-4 font-semibold">Aksi</th>
+                        <th class="py-3 px-4 font-semibold">Entitas</th>
+                        <th class="py-3 px-4 font-semibold">ID</th>
+                        <th class="py-3 px-4 font-semibold">IP</th>
+                        <th class="py-3 px-4 font-semibold">Payload</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -36,7 +33,7 @@
                             {{ $log->created_at->format('Y-m-d H:i:s') }}
                         </td>
                         <td class="py-3.5 px-4 font-sans font-medium text-slate-900">
-                            {{ $log->user->name ?? 'System Automated' }}
+                            {{ $log->user->name ?? 'Sistem Otomatis' }}
                         </td>
                         <td class="py-3.5 px-4">
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
@@ -59,7 +56,7 @@
                     @empty
                     <tr>
                         <td colspan="7" class="py-8 text-center text-slate-400 font-mono">
-                            No audit trail entries recorded yet.
+                            Belum ada catatan jejak audit dalam sistem.
                         </td>
                     </tr>
                     @endforelse

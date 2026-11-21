@@ -12,8 +12,8 @@ class CurrencyApiService
 
     public function __construct()
     {
-        // 100% free institutional exchange rate API (supports 160+ currencies with IDR as base)
-        $this->primaryUrl = 'https://open.er-api.com/v6/latest/IDR';
+        // Institutional exchange rate API (supports 160+ currencies with IDR as base)
+        $this->primaryUrl = config('services.currency.url', 'https://open.er-api.com/v6/latest/IDR');
     }
 
     /**

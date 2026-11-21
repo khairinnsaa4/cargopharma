@@ -34,7 +34,7 @@ class ExceptionController extends Controller
 
         $this->exceptionService->logException($shipment, $validated, $user);
 
-        return back()->with('warning', 'Shipment incident/exception has been logged.');
+        return back()->with('warning', 'Insiden/kendala pengiriman berhasil dicatat.');
     }
 
     public function resolve(Request $request, ShipmentException $exception)
@@ -51,6 +51,6 @@ class ExceptionController extends Controller
 
         $this->exceptionService->resolveException($exception, $validated['status'], $validated['resolution_notes'], $user);
 
-        return back()->with('success', "Incident #{$exception->id} status updated to {$validated['status']}.");
+        return back()->with('success', "Status insiden #{$exception->id} berhasil diperbarui menjadi {$validated['status']}.");
     }
 }

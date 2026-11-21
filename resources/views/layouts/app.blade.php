@@ -63,6 +63,17 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Leaflet Interactive Map Dragging & Pan */
+        .leaflet-container {
+            cursor: grab !important;
+        }
+        .leaflet-container:active,
+        .leaflet-dragging,
+        .leaflet-dragging .leaflet-grab,
+        .leaflet-dragging .leaflet-interactive {
+            cursor: grabbing !important;
+        }
     </style>
 </head>
 <body class="h-full flex overflow-hidden bg-[#F4F7F6]">
@@ -76,64 +87,77 @@
             </div>
             <div>
                 <span class="font-bold text-white text-base tracking-tight">CargoPharma</span>
-                <span class="block text-[10px] text-teal-300/80 font-mono">
-                    @if(Auth::user()->isAdmin())
-                        Executive Governance
-                    @elseif(Auth::user()->isOperator())
-                        Cold-Chain Operations
-                    @else
-                        Consignee Portal
-                    @endif
-                </span>
+                <span class="block text-[10px] text-teal-400 font-mono tracking-wider uppercase font-semibold">{{ Auth::user()->role }}</span>
             </div>
         </div>
 
-        <!-- Navigation Menus (Role-Tailored Healthcare Architecture) -->
+        <!-- Navigation Menus -->
         <div class="flex-1 overflow-y-auto px-4 py-5 space-y-1">
             <!-- 1. Dashboard -->
             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('dashboard') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
                 <i data-lucide="activity" class="w-4 h-4"></i>
-                <span>Dashboard</span>
+                <span>Dasbor</span>
             </a>
 
-            <!-- 2. Shipments / My Consignments -->
+            <!-- 2. Shipments -->
             <a href="{{ route('shipments.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('shipments.index') || request()->routeIs('shipments.show') || request()->routeIs('shipments.create') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
                 <i data-lucide="package" class="w-4 h-4"></i>
-                <span>{{ Auth::user()->isCustomer() ? 'My Consignments' : 'Shipments' }}</span>
+                <span>Pengiriman</span>
             </a>
 
-            <!-- 3. Tracking (Dedicated Live Map & Checkpoint View) -->
+            <!-- 3. Tracking -->
             <a href="{{ route('tracking.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('tracking.index') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
                 <i data-lucide="map-pin" class="w-4 h-4"></i>
-                <span>{{ Auth::user()->isCustomer() ? 'Live Tracking' : 'Tracking' }}</span>
+                <span>Pelacakan</span>
             </a>
 
-            <!-- 4. Exceptions / Cold-Chain Alerts -->
+            <!-- 4. Exceptions -->
             <a href="{{ route('exceptions.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('exceptions.index') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
                 <i data-lucide="alert-triangle" class="w-4 h-4"></i>
-                <span>{{ Auth::user()->isCustomer() ? 'Cold-Chain Alerts' : 'Exceptions' }}</span>
+                <span>Insiden</span>
             </a>
 
-            <!-- 5. Global Radar (Mata Uang, Berita Antar Benua, & Cuaca Dunia) -->
-            <a href="{{ route('global-radar.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('global-radar.index') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
-                <i data-lucide="globe-2" class="w-4 h-4"></i>
-                <span>Global Radar</span>
+            <!-- 5. Global Radar -->
+            <a href="{{ route('global-radar.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('global-radar.index') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="globe-2" class="w-4 h-4"></i>
+                    <span>Radar Global</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-teal-900/80 text-teal-200 border border-teal-700/50">Cuaca & Valas</span>
             </a>
 
             @if(!Auth::user()->isCustomer())
-            <!-- 6. Carriers & Fleet Partners (Internal Bio Farma Logistics Only) -->
+            <!-- Operations -->
+            <div class="pt-4 px-3 text-[10px] uppercase font-mono tracking-wider text-teal-400/80 font-semibold">Operasional</div>
+            
             <a href="{{ route('carriers.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('carriers.index') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
                 <i data-lucide="truck" class="w-4 h-4"></i>
-                <span>Carriers</span>
+                <span>Armada</span>
+            </a>
+
+            <a href="{{ route('locations.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('locations.index') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
+                <i data-lucide="navigation" class="w-4 h-4"></i>
+                <span>Lokasi</span>
+            </a>
+
+            <a href="{{ route('reports.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('reports.index') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                <span>Laporan</span>
             </a>
             @endif
 
             @if(Auth::user()->isAdmin())
-            <!-- 6. Reports & Audit Trail (Governance - Exclusive to Administrator) -->
-            <div class="pt-4 px-3 text-[10px] uppercase font-mono tracking-wider text-teal-400/80 font-semibold">Governance</div>
+            <!-- Governance -->
+            <div class="pt-4 px-3 text-[10px] uppercase font-mono tracking-wider text-teal-400/80 font-semibold">Sistem</div>
+
+            <a href="{{ route('users.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('users.index') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span>Pengguna</span>
+            </a>
+
             <a href="{{ route('audit-logs.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('audit-logs.index') ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-white hover:bg-teal-900/40' }}">
                 <i data-lucide="file-text" class="w-4 h-4"></i>
-                <span>Audit Logs</span>
+                <span>Audit Log</span>
             </a>
             @endif
         </div>
@@ -144,7 +168,7 @@
                 @csrf
                 <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-rose-400 hover:bg-teal-900/40 transition-all">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
-                    <span>Log Out</span>
+                    <span>Keluar</span>
                 </button>
             </form>
         </div>
@@ -158,35 +182,27 @@
             <div class="flex items-center gap-4 flex-1 max-w-md">
                 <form action="{{ route('shipments.index') }}" method="GET" class="w-full relative">
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-                    <input type="text" name="search" placeholder="Search consignment no, carrier, or origin..." 
+                    <input type="text" name="search" placeholder="Cari resi, kurir, rute..." 
                         class="w-full pl-9 pr-4 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:bg-white transition-all">
                 </form>
             </div>
 
             <!-- Right Controls: Telemetry Badge, Notifications & Profile -->
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
                 <!-- Status Badge -->
-                <div class="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-teal-50 border border-teal-200/80 text-[11px] font-medium text-teal-800">
-                    <span class="w-1.5 h-1.5 rounded-full bg-teal-600 animate-pulse"></span>
-                    <span>Cold-Chain Telemetry Active</span>
-                </div>
-
-                <!-- Notifications Bell -->
-                <div class="relative">
-                    <button class="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 relative">
-                        <i data-lucide="bell" class="w-4 h-4"></i>
-                        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
-                    </button>
+                <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-xs font-semibold text-teal-800">
+                    <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                    <span>Live Monitoring</span>
                 </div>
 
                 <!-- User Profile -->
-                <div class="flex items-center gap-3 pl-3 border-l border-slate-200">
-                    <div class="w-9 h-9 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs border border-teal-200 shadow-xs">
+                <div class="flex items-center gap-2.5 pl-3 border-l border-slate-200">
+                    <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs border border-teal-200 shadow-xs">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </div>
                     <div class="hidden sm:block text-left">
                         <div class="text-xs font-semibold text-slate-900 leading-tight">{{ Auth::user()->name }}</div>
-                        <div class="text-[10px] text-teal-700 font-semibold uppercase tracking-wider">{{ Auth::user()->role }} &bull; {{ Auth::user()->organization ?? 'PT Bio Farma' }}</div>
+                        <div class="text-[10px] text-teal-700 font-bold uppercase">{{ Auth::user()->role }}</div>
                     </div>
                 </div>
             </div>
@@ -231,6 +247,36 @@
 
     <script>
         lucide.createIcons();
+
+        // Universal Smooth Scroll Handler for Hash Navigation inside <main>
+        document.addEventListener('click', function(e) {
+            const anchor = e.target.closest('a[href*="#"]');
+            if (!anchor) return;
+            try {
+                const url = new URL(anchor.href, window.location.href);
+                if (url.pathname === window.location.pathname && url.hash) {
+                    const targetId = url.hash.substring(1);
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        if (typeof weatherMap !== 'undefined' && weatherMap) {
+                            setTimeout(() => weatherMap.invalidateSize(), 300);
+                        }
+                    }
+                }
+            } catch (err) {}
+        });
+
+        // Auto-scroll on initial load if hash is present
+        if (window.location.hash) {
+            setTimeout(function() {
+                const target = document.getElementById(window.location.hash.substring(1));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 250);
+        }
     </script>
     @stack('scripts')
 </body>

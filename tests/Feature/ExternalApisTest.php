@@ -127,9 +127,8 @@ class ExternalApisTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertStatus(200);
-        $response->assertSee('Live FX Rates');
-        $response->assertSee('Live Global Logistics', false);
-        $response->assertSee('Advisories');
+        $response->assertSee('Radar Global');
+        $response->assertSee('Buka Radar');
     }
 
     public function test_global_radar_page_renders_with_currency_weather_and_continental_news(): void
@@ -141,9 +140,9 @@ class ExternalApisTest extends TestCase
         $response = $this->actingAs($user)->get('/global-radar');
 
         $response->assertStatus(200);
-        $response->assertSee('Global Logistics Radar');
-        $response->assertSee('Konverter Mata Uang Bebas Pilih');
-        $response->assertSee('Peta Radar Cuaca Real-Time Bandara Dunia');
-        $response->assertSee('Berita &amp; Regulasi Logistik Antar Benua', false);
+        $response->assertSee('Radar Global');
+        $response->assertSee('Konversi Valas');
+        $response->assertSee('Peta Cuaca Tiap Negara');
+        $response->assertSee('Peringatan Logistik');
     }
 }
