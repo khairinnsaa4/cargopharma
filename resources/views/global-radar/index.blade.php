@@ -240,10 +240,10 @@
                 <span class="text-xs font-semibold text-slate-700 block">Dari</span>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <select id="currency-from" onchange="runConverter()" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white font-mono text-xs font-semibold text-slate-900 focus:outline-none focus:border-teal-600">
-                        <option value="IDR" data-symbol="Rp" data-rate="1" selected>🇮🇩 IDR</option>
+                        <option value="IDR" data-symbol="Rp" data-rate="1" data-flag="🇮🇩" selected>🇮🇩 IDR - Indonesia (Rupiah)</option>
                         @foreach($currencyData['all_currencies'] as $c)
-                            <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}">
-                                {{ $c['flag'] }} {{ $c['code'] }}
+                            <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}" data-flag="{{ $c['flag'] }}">
+                                {{ $c['flag'] }} {{ $c['code'] }} - {{ $c['country'] }} ({{ $c['name'] }})
                             </option>
                         @endforeach
                     </select>
@@ -268,15 +268,16 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
                     <select id="currency-to" onchange="runConverter()" class="w-full px-3 py-2 rounded-lg border border-teal-200 bg-white font-mono text-xs font-semibold text-slate-900 focus:outline-none focus:border-teal-600">
                         @foreach($currencyData['all_currencies'] as $c)
-                            <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}" {{ $c['code'] === 'NGN' ? 'selected' : '' }}>
-                                {{ $c['flag'] }} {{ $c['code'] }}
+                            <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}" data-flag="{{ $c['flag'] }}" {{ $c['code'] === 'NGN' ? 'selected' : '' }}>
+                                {{ $c['flag'] }} {{ $c['code'] }} - {{ $c['country'] }} ({{ $c['name'] }})
                             </option>
                         @endforeach
-                        <option value="IDR" data-symbol="Rp" data-rate="1">🇮🇩 IDR</option>
+                        <option value="IDR" data-symbol="Rp" data-rate="1" data-flag="🇮🇩">🇮🇩 IDR - Indonesia (Rupiah)</option>
                     </select>
 
-                    <div class="p-2 rounded-lg bg-white border border-teal-200 text-right overflow-hidden">
-                        <div id="converted-result" class="text-sm font-black font-mono text-teal-950 truncate">
+                    <div class="p-2 rounded-lg bg-white border border-teal-200 flex items-center justify-between gap-2 overflow-hidden shadow-2xs">
+                        <span id="converted-flag" class="text-2xl shrink-0 leading-none pl-1">🇳🇬</span>
+                        <div id="converted-result" class="text-sm font-black font-mono text-teal-950 truncate text-right">
                             ₦ 743.700 NGN
                         </div>
                     </div>
@@ -629,8 +630,18 @@
         let inIdr = fromCode === 'IDR' ? amount : (fromRate > 0 ? (amount / fromRate) : amount);
         let converted = toCode === 'IDR' ? inIdr : (inIdr * toRate);
 
+        const fromOption = document.getElementById('currency-from').querySelector(`option[value="${fromCode}"]`);
+        const fromFlag = fromOption ? (fromOption.getAttribute('data-flag') || '🇮🇩') : '🇮🇩';
+
         const toOption = document.getElementById('currency-to').querySelector(`option[value="${toCode}"]`);
         const toSymbol = toOption ? toOption.getAttribute('data-symbol') : '';
+        const toFlag = toOption ? (toOption.getAttribute('data-flag') || '') : '';
+
+        // Display flag
+        const flagEl = document.getElementById('converted-flag');
+        if (flagEl && toFlag) {
+            flagEl.textContent = toFlag;
+        }
 
         // Display
         const resEl = document.getElementById('converted-result');
@@ -638,12 +649,12 @@
             resEl.textContent = toSymbol + ' ' + converted.toLocaleString('id-ID', { maximumFractionDigits: 2 }) + ' ' + toCode;
         }
 
-        // Formula
+        // Formula with Country Flags
         const formulaEl = document.getElementById('conversion-formula');
         if (formulaEl) {
             const oneUnitTo = toRate > 0 ? (fromRate / toRate) : 0;
             const oneUnitFrom = fromRate > 0 ? (toRate / fromRate) : 0;
-            formulaEl.textContent = `Kurs Acuan: 1 ${fromCode} = ${oneUnitFrom.toFixed(4)} ${toCode} | 1 ${toCode} = ${oneUnitTo.toFixed(4)} ${fromCode}`;
+            formulaEl.textContent = `Kurs Acuan: ${fromFlag} 1 ${fromCode} = ${toFlag} ${oneUnitFrom.toFixed(4)} ${toCode} | ${toFlag} 1 ${toCode} = ${fromFlag} ${oneUnitTo.toFixed(4)} ${fromCode}`;
         }
     }
 

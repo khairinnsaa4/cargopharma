@@ -117,9 +117,11 @@
             <div class="valas-ticker-track flex items-center gap-3 text-xs font-mono py-1 whitespace-nowrap">
                 @for($repeat = 0; $repeat < 2; $repeat++)
                     @foreach($currencyData['pairs'] as $pair)
-                    <div class="inline-flex items-center gap-2 shrink-0 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800 shadow-2xs hover:border-teal-500/50 hover:bg-slate-850 transition-colors">
-                        <span class="text-slate-400 text-[11px] font-semibold">{{ $pair['label'] }}</span>
-                        <span class="font-bold text-emerald-400 font-mono">{{ $pair['symbol'] }} {{ number_format($pair['rate'], $pair['code'] === 'IDR' ? 0 : 4) }}</span>
+                    <div class="inline-flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800 shadow-2xs hover:border-teal-500/50 hover:bg-slate-850 transition-colors">
+                        <span class="text-sm shrink-0 leading-none">{{ $pair['flag'] }}</span>
+                        <span class="text-slate-300 text-[11px] font-bold">{{ $pair['code'] }}</span>
+                        <span class="text-slate-500 text-[10px] hidden sm:inline">({{ $pair['country'] }})</span>
+                        <span class="font-bold text-emerald-400 font-mono text-[11px]">{{ $pair['symbol'] }} {{ number_format($pair['rate'], $pair['code'] === 'IDR' ? 0 : 4) }}</span>
                     </div>
                     @endforeach
                 @endfor

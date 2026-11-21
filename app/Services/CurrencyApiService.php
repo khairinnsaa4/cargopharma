@@ -210,6 +210,13 @@ class CurrencyApiService
             'CLP' => ['flag' => '🇨🇱', 'country' => 'Chili', 'name' => 'Chilean Peso', 'symbol' => '$'],
             'COP' => ['flag' => '🇨🇴', 'country' => 'Kolombia', 'name' => 'Colombian Peso', 'symbol' => '$'],
             'PEN' => ['flag' => '🇵🇪', 'country' => 'Peru', 'name' => 'Peruvian Sol', 'symbol' => 'S/.'],
+            'HKD' => ['flag' => '🇭🇰', 'country' => 'Hong Kong', 'name' => 'Hong Kong Dollar', 'symbol' => 'HK$'],
+            'TWD' => ['flag' => '🇹🇼', 'country' => 'Taiwan', 'name' => 'New Taiwan Dollar', 'symbol' => 'NT$'],
+            'BND' => ['flag' => '🇧🇳', 'country' => 'Brunei', 'name' => 'Brunei Dollar', 'symbol' => 'B$'],
+            'JOD' => ['flag' => '🇯🇴', 'country' => 'Yordania', 'name' => 'Jordanian Dinar', 'symbol' => 'JD'],
+            'HUF' => ['flag' => '🇭🇺', 'country' => 'Hungaria', 'name' => 'Hungarian Forint', 'symbol' => 'Ft'],
+            'CZK' => ['flag' => '🇨🇿', 'country' => 'Ceko', 'name' => 'Czech Koruna', 'symbol' => 'Kč'],
+            'ILS' => ['flag' => '🇮🇱', 'country' => 'Israel', 'name' => 'Israeli Shekel', 'symbol' => '₪'],
         ];
 
         $output = [];
@@ -217,12 +224,23 @@ class CurrencyApiService
             if ($code === 'IDR') {
                 continue;
             }
-            $info = $meta[$code] ?? [
-                'flag' => '🌐',
-                'country' => $code,
-                'name' => $code.' Currency',
-                'symbol' => $code,
-            ];
+
+            if (isset($meta[$code])) {
+                $info = $meta[$code];
+            } else {
+                $c1 = ord(strtoupper($code[0] ?? ''));
+                $c2 = ord(strtoupper($code[1] ?? ''));
+                $flag = ($c1 >= 65 && $c1 <= 90 && $c2 >= 65 && $c2 <= 90)
+                    ? (mb_chr(127397 + $c1).mb_chr(127397 + $c2))
+                    : '🏳️';
+
+                $info = [
+                    'flag' => $flag,
+                    'country' => $code,
+                    'name' => $code.' Currency',
+                    'symbol' => $code,
+                ];
+            }
 
             $ratePerIdr = (float) $rate;
             $idrPerUnit = $ratePerIdr > 0 ? round(1 / $ratePerIdr, 2) : 0;
