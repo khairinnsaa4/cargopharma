@@ -15,6 +15,7 @@ use App\Http\Controllers\Web\ShipmentController;
 use App\Http\Controllers\Web\TrackingController;
 use App\Http\Controllers\Web\TrackingPageController;
 use App\Http\Controllers\Web\UserController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,6 +33,26 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/quick-login/{role}', [AuthController::class, 'quickLogin'])->name('login.quick');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Cloud / Serverless Database Migration Helper
+Route::get('/run-migrate', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        Artisan::call('db:seed', ['--force' => true]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Database Supabase berhasil dimigrasikan dan diisi data seed pengguna!',
+            'output' => Artisan::output(),
+        ]);
+    } catch (Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'code' => $e->getCode(),
+        ], 500);
+    }
+})->name('run-migrate');
 
 // Authenticated Application Routes
 Route::middleware('auth')->group(function () {

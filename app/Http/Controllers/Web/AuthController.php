@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class AuthController extends Controller
 {
@@ -15,12 +19,15 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
 
-        if (app()->environment('local') && User::count() === 0) {
-            try {
-                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-            } catch (\Throwable) {
-                // Seeder will be retried on quickLogin if needed
+        try {
+            if (! Schema::hasTable('users')) {
+                Artisan::call('migrate', ['--force' => true]);
             }
+            if (User::count() === 0) {
+                Artisan::call('db:seed', ['--force' => true]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Auto-migration/seed check: '.$e->getMessage());
         }
 
         return view('auth.login');
@@ -33,12 +40,15 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (app()->environment('local') && User::where('email', $credentials['email'])->doesntExist()) {
-            try {
-                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-            } catch (\Throwable) {
-                // continue to Auth::attempt
+        try {
+            if (! Schema::hasTable('users')) {
+                Artisan::call('migrate', ['--force' => true]);
+                Artisan::call('db:seed', ['--force' => true]);
+            } elseif (User::where('email', $credentials['email'])->doesntExist()) {
+                Artisan::call('db:seed', ['--force' => true]);
             }
+        } catch (\Throwable $e) {
+            Log::warning('User seed check: '.$e->getMessage());
         }
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
@@ -80,7 +90,7 @@ class AuthController extends Controller
 
         if (! $user) {
             try {
-                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+                Artisan::call('db:seed', ['--force' => true]);
                 $user = User::where('role', $role)->first();
             } catch (\Throwable) {
                 // fallback to explicit creation
@@ -93,7 +103,7 @@ class AuthController extends Controller
                     ['email' => 'admin@cargopharma.com'],
                     [
                         'name' => 'Administrator Bio Farma',
-                        'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                        'password' => Hash::make('password'),
                         'role' => 'admin',
                         'phone' => '+62 811-2233-4455',
                         'organization' => 'PT Bio Farma (Persero) - Headquarters',
@@ -104,7 +114,7 @@ class AuthController extends Controller
                     ['email' => 'operator@cargopharma.com'],
                     [
                         'name' => 'Rian Pratama',
-                        'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                        'password' => Hash::make('password'),
                         'role' => 'operator',
                         'phone' => '+62 812-9988-7766',
                         'organization' => 'PT Bio Farma - Global Export & Cold Chain Logistics',
@@ -115,7 +125,7 @@ class AuthController extends Controller
                     ['email' => 'customer@unicef.org'],
                     [
                         'name' => 'Dr. Adebayo Johnson',
-                        'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                        'password' => Hash::make('password'),
                         'role' => 'customer',
                         'phone' => '+45 35 27 35 27',
                         'organization' => 'UNICEF Global Supply Division (Polio Outbreak Response)',
