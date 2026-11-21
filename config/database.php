@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', (env('POSTGRES_URL') || env('DATABASE_URL')) ? 'pgsql' : 'sqlite'),
 
     /*
     |--------------------------------------------------------------------------
@@ -86,12 +86,12 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'cargopharma'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
+            'url' => env('DB_URL', env('POSTGRES_URL', env('DATABASE_URL'))),
+            'host' => env('DB_HOST', env('POSTGRES_HOST', '127.0.0.1')),
+            'port' => env('DB_PORT', env('POSTGRES_PORT', '5432')),
+            'database' => env('DB_DATABASE', env('POSTGRES_DATABASE', 'postgres')),
+            'username' => env('DB_USERNAME', env('POSTGRES_USER', 'postgres')),
+            'password' => env('DB_PASSWORD', env('POSTGRES_PASSWORD', '')),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
