@@ -239,14 +239,60 @@
             <div class="lg:col-span-5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
                 <span class="text-xs font-semibold text-slate-700 block">Dari</span>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <select id="currency-from" onchange="runConverter()" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white font-mono text-xs font-semibold text-slate-900 focus:outline-none focus:border-teal-600">
-                        <option value="IDR" data-symbol="Rp" data-rate="1" data-flag="🇮🇩" selected>🇮🇩 IDR - Indonesia (Rupiah)</option>
-                        @foreach($currencyData['all_currencies'] as $c)
-                            <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}" data-flag="{{ $c['flag'] }}">
-                                {{ $c['flag'] }} {{ $c['code'] }} - {{ $c['country'] }} ({{ $c['name'] }})
-                            </option>
-                        @endforeach
-                    </select>
+                    <!-- Custom Currency Dropdown (From) -->
+                    <div class="relative" id="currency-from-container">
+                        <!-- Hidden select for compatibility -->
+                        <select id="currency-from" onchange="runConverter()" class="hidden">
+                            <option value="IDR" data-symbol="Rp" data-rate="1" data-flag="id" selected>IDR - Indonesia (Rupiah)</option>
+                            @foreach($currencyData['all_currencies'] as $c)
+                                <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}" data-flag="{{ $c['country_code'] }}">
+                                    {{ $c['code'] }} - {{ $c['country'] }} ({{ $c['name'] }})
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <!-- Trigger Button -->
+                        <button type="button" id="currency-from-btn" onclick="toggleCurrencyDropdown('from')"
+                            class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-900 flex items-center justify-between gap-1.5 focus:outline-none focus:border-teal-600 shadow-2xs hover:bg-slate-50 transition-colors">
+                            <span class="flex items-center gap-2 truncate">
+                                <span id="currency-from-flag" class="fi fi-id fis shrink-0 rounded-xs" style="width: 18px; height: 13px;"></span>
+                                <span id="currency-from-label" class="font-mono text-slate-900 truncate">IDR - Indonesia (Rupiah)</span>
+                            </span>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="currency-from-menu" class="hidden absolute left-0 top-full mt-1 w-72 sm:w-80 max-h-64 bg-white rounded-xl shadow-xl border border-slate-200 z-50 flex flex-col overflow-hidden animate-in fade-in duration-150">
+                            <!-- Search box -->
+                            <div class="p-2 border-b border-slate-100 bg-slate-50/80 sticky top-0 z-10">
+                                <div class="relative">
+                                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                    <input type="text" id="currency-from-search" placeholder="Cari negara / valas..."
+                                        oninput="filterCurrencyList(this, 'from')"
+                                        class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500">
+                                </div>
+                            </div>
+                            <!-- Options List -->
+                            <div class="overflow-y-auto divide-y divide-slate-100 py-1" id="currency-from-list" style="max-height: 200px;">
+                                <button type="button" onclick="selectCurrencyCustom('from', 'IDR', 'id', 'IDR - Indonesia (Rupiah)', 'Rp', 1)"
+                                    class="currency-item w-full px-3 py-2 text-left hover:bg-teal-50/80 flex items-center gap-2.5 text-xs text-slate-800 transition-colors"
+                                    data-search="idr indonesia rupiah">
+                                    <span class="fi fi-id fis shrink-0 rounded-xs" style="width: 18px; height: 13px;"></span>
+                                    <span class="font-bold font-mono text-slate-900">IDR</span>
+                                    <span class="text-slate-500 truncate text-[11px]">- Indonesia (Rupiah)</span>
+                                </button>
+                                @foreach($currencyData['all_currencies'] as $c)
+                                    <button type="button" onclick="selectCurrencyCustom('from', '{{ $c['code'] }}', '{{ $c['country_code'] }}', '{{ $c['code'] }} - {{ $c['country'] }} ({{ $c['name'] }})', '{{ $c['symbol'] }}', {{ $c['rate'] }})"
+                                        class="currency-item w-full px-3 py-2 text-left hover:bg-teal-50/80 flex items-center gap-2.5 text-xs text-slate-800 transition-colors"
+                                        data-search="{{ strtolower($c['code'].' '.$c['country'].' '.$c['name']) }}">
+                                        <span class="fi fi-{{ $c['country_code'] }} fis shrink-0 rounded-xs" style="width: 18px; height: 13px;"></span>
+                                        <span class="font-bold font-mono text-slate-900">{{ $c['code'] }}</span>
+                                        <span class="text-slate-500 truncate text-[11px]">- {{ $c['country'] }} ({{ $c['name'] }})</span>
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="relative">
                         <input type="number" id="amount-input" value="10000000" min="0" step="any" oninput="runConverter()"
@@ -266,17 +312,63 @@
             <div class="lg:col-span-5 p-3.5 rounded-xl bg-teal-50/60 border border-teal-200 space-y-2">
                 <span class="text-xs font-semibold text-teal-900 block">Ke</span>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
-                    <select id="currency-to" onchange="runConverter()" class="w-full px-3 py-2 rounded-lg border border-teal-200 bg-white font-mono text-xs font-semibold text-slate-900 focus:outline-none focus:border-teal-600">
-                        @foreach($currencyData['all_currencies'] as $c)
-                            <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}" data-flag="{{ $c['flag'] }}" {{ $c['code'] === 'NGN' ? 'selected' : '' }}>
-                                {{ $c['flag'] }} {{ $c['code'] }} - {{ $c['country'] }} ({{ $c['name'] }})
-                            </option>
-                        @endforeach
-                        <option value="IDR" data-symbol="Rp" data-rate="1" data-flag="🇮🇩">🇮🇩 IDR - Indonesia (Rupiah)</option>
-                    </select>
+                    <!-- Custom Currency Dropdown (To) -->
+                    <div class="relative" id="currency-to-container">
+                        <!-- Hidden select for compatibility -->
+                        <select id="currency-to" onchange="runConverter()" class="hidden">
+                            @foreach($currencyData['all_currencies'] as $c)
+                                <option value="{{ $c['code'] }}" data-symbol="{{ $c['symbol'] }}" data-rate="{{ $c['rate'] }}" data-flag="{{ $c['country_code'] }}" {{ $c['code'] === 'NGN' ? 'selected' : '' }}>
+                                    {{ $c['code'] }} - {{ $c['country'] }} ({{ $c['name'] }})
+                                </option>
+                            @endforeach
+                            <option value="IDR" data-symbol="Rp" data-rate="1" data-flag="id">IDR - Indonesia (Rupiah)</option>
+                        </select>
+
+                        <!-- Trigger Button -->
+                        <button type="button" id="currency-to-btn" onclick="toggleCurrencyDropdown('to')"
+                            class="w-full px-3 py-2 rounded-lg border border-teal-200 bg-white text-xs font-semibold text-slate-900 flex items-center justify-between gap-1.5 focus:outline-none focus:border-teal-600 shadow-2xs hover:bg-slate-50 transition-colors">
+                            <span class="flex items-center gap-2 truncate">
+                                <span id="currency-to-flag" class="fi fi-ng fis shrink-0 rounded-xs" style="width: 18px; height: 13px;"></span>
+                                <span id="currency-to-label" class="font-mono text-slate-900 truncate">NGN - Nigeria (Nigerian Naira)</span>
+                            </span>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="currency-to-menu" class="hidden absolute left-0 top-full mt-1 w-72 sm:w-80 max-h-64 bg-white rounded-xl shadow-xl border border-slate-200 z-50 flex flex-col overflow-hidden animate-in fade-in duration-150">
+                            <!-- Search box -->
+                            <div class="p-2 border-b border-slate-100 bg-slate-50/80 sticky top-0 z-10">
+                                <div class="relative">
+                                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                    <input type="text" id="currency-to-search" placeholder="Cari negara / valas..."
+                                        oninput="filterCurrencyList(this, 'to')"
+                                        class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500">
+                                </div>
+                            </div>
+                            <!-- Options List -->
+                            <div class="overflow-y-auto divide-y divide-slate-100 py-1" id="currency-to-list" style="max-height: 200px;">
+                                @foreach($currencyData['all_currencies'] as $c)
+                                    <button type="button" onclick="selectCurrencyCustom('to', '{{ $c['code'] }}', '{{ $c['country_code'] }}', '{{ $c['code'] }} - {{ $c['country'] }} ({{ $c['name'] }})', '{{ $c['symbol'] }}', {{ $c['rate'] }})"
+                                        class="currency-item w-full px-3 py-2 text-left hover:bg-teal-50/80 flex items-center gap-2.5 text-xs text-slate-800 transition-colors"
+                                        data-search="{{ strtolower($c['code'].' '.$c['country'].' '.$c['name']) }}">
+                                        <span class="fi fi-{{ $c['country_code'] }} fis shrink-0 rounded-xs" style="width: 18px; height: 13px;"></span>
+                                        <span class="font-bold font-mono text-slate-900">{{ $c['code'] }}</span>
+                                        <span class="text-slate-500 truncate text-[11px]">- {{ $c['country'] }} ({{ $c['name'] }})</span>
+                                    </button>
+                                @endforeach
+                                <button type="button" onclick="selectCurrencyCustom('to', 'IDR', 'id', 'IDR - Indonesia (Rupiah)', 'Rp', 1)"
+                                    class="currency-item w-full px-3 py-2 text-left hover:bg-teal-50/80 flex items-center gap-2.5 text-xs text-slate-800 transition-colors"
+                                    data-search="idr indonesia rupiah">
+                                    <span class="fi fi-id fis shrink-0 rounded-xs" style="width: 18px; height: 13px;"></span>
+                                    <span class="font-bold font-mono text-slate-900">IDR</span>
+                                    <span class="text-slate-500 truncate text-[11px]">- Indonesia (Rupiah)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="p-2 rounded-lg bg-white border border-teal-200 flex items-center justify-between gap-2 overflow-hidden shadow-2xs">
-                        <span id="converted-flag" class="text-2xl shrink-0 leading-none pl-1">🇳🇬</span>
+                        <span id="converted-flag" class="fi fi-ng fis shrink-0 leading-none pl-1" style="font-size: 24px; border-radius: 3px;"></span>
                         <div id="converted-result" class="text-sm font-black font-mono text-teal-950 truncate text-right">
                             ₦ 743.700 NGN
                         </div>
@@ -293,12 +385,12 @@
 
             <!-- Quick Currency Selection Chips -->
             <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
-                <button type="button" onclick="setQuickCurrency('NGN')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇳🇬 NGN</button>
-                <button type="button" onclick="setQuickCurrency('USD')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇺🇸 USD</button>
-                <button type="button" onclick="setQuickCurrency('AED')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇦🇪 AED</button>
-                <button type="button" onclick="setQuickCurrency('EUR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇪🇺 EUR</button>
-                <button type="button" onclick="setQuickCurrency('SAR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇸🇦 SAR</button>
-                <button type="button" onclick="setQuickCurrency('KES')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium">🇰🇪 KES</button>
+                <button type="button" onclick="setQuickCurrency('NGN')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium inline-flex items-center gap-1"><span class="fi fi-ng fis" style="font-size:12px;border-radius:1px;"></span> NGN</button>
+                <button type="button" onclick="setQuickCurrency('USD')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium inline-flex items-center gap-1"><span class="fi fi-us fis" style="font-size:12px;border-radius:1px;"></span> USD</button>
+                <button type="button" onclick="setQuickCurrency('AED')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium inline-flex items-center gap-1"><span class="fi fi-ae fis" style="font-size:12px;border-radius:1px;"></span> AED</button>
+                <button type="button" onclick="setQuickCurrency('EUR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium inline-flex items-center gap-1"><span class="fi fi-eu fis" style="font-size:12px;border-radius:1px;"></span> EUR</button>
+                <button type="button" onclick="setQuickCurrency('SAR')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium inline-flex items-center gap-1"><span class="fi fi-sa fis" style="font-size:12px;border-radius:1px;"></span> SAR</button>
+                <button type="button" onclick="setQuickCurrency('KES')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-medium inline-flex items-center gap-1"><span class="fi fi-ke fis" style="font-size:12px;border-radius:1px;"></span> KES</button>
             </div>
         </div>
     </div>
@@ -320,7 +412,7 @@
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/90 hover:border-teal-400 hover:bg-teal-50/20 transition-all space-y-1 group">
                 <div class="flex items-center justify-between text-xs">
                     <span class="font-bold text-slate-800 flex items-center gap-1.5 truncate">
-                        <span>{{ $h['flag'] }}</span>
+                        <span class="fi fi-{{ $h['country_code'] ?? 'id' }} fis shrink-0 rounded-xs" style="width: 16px; height: 12px;"></span>
                         <span>{{ $h['city'] }}</span>
                     </span>
                     <span class="font-mono text-[9px] px-1 py-0.2 rounded bg-slate-200/70 text-slate-600 font-bold">
@@ -618,6 +710,97 @@
     }
 
     // 2. CONVERTER FUNCTIONS
+    function toggleCurrencyDropdown(type) {
+        const menu = document.getElementById(`currency-${type}-menu`);
+        const otherType = type === 'from' ? 'to' : 'from';
+        const otherMenu = document.getElementById(`currency-${otherType}-menu`);
+        if (otherMenu) otherMenu.classList.add('hidden');
+
+        if (menu) {
+            menu.classList.toggle('hidden');
+            if (!menu.classList.contains('hidden')) {
+                const searchInput = document.getElementById(`currency-${type}-search`);
+                if (searchInput) {
+                    searchInput.value = '';
+                    filterCurrencyList(searchInput, type);
+                    setTimeout(() => searchInput.focus(), 60);
+                }
+                if (window.lucide) { lucide.createIcons(); }
+            }
+        }
+    }
+
+    function filterCurrencyList(input, type) {
+        const q = input.value.toLowerCase().trim();
+        const list = document.getElementById(`currency-${type}-list`);
+        if (!list) return;
+        const items = list.querySelectorAll('.currency-item');
+        items.forEach(item => {
+            const text = item.getAttribute('data-search') || '';
+            if (!q || text.includes(q)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function selectCurrencyCustom(type, code, countryCode, label, symbol, rate) {
+        const sel = document.getElementById(`currency-${type}`);
+        if (sel) {
+            sel.value = code;
+        }
+
+        const flagEl = document.getElementById(`currency-${type}-flag`);
+        if (flagEl) {
+            flagEl.className = `fi fi-${countryCode} fis shrink-0 rounded-xs`;
+        }
+
+        const labelEl = document.getElementById(`currency-${type}-label`);
+        if (labelEl) {
+            labelEl.textContent = label;
+        }
+
+        const menu = document.getElementById(`currency-${type}-menu`);
+        if (menu) {
+            menu.classList.add('hidden');
+        }
+
+        runConverter();
+    }
+
+    function updateDropdownUI(type, code) {
+        const sel = document.getElementById(`currency-${type}`);
+        if (!sel) return;
+        const opt = sel.querySelector(`option[value="${code}"]`);
+        if (!opt) return;
+
+        const flagCode = opt.getAttribute('data-flag') || 'id';
+        const text = opt.textContent.trim();
+
+        const flagEl = document.getElementById(`currency-${type}-flag`);
+        if (flagEl) {
+            flagEl.className = `fi fi-${flagCode} fis shrink-0 rounded-xs`;
+        }
+
+        const labelEl = document.getElementById(`currency-${type}-label`);
+        if (labelEl) {
+            labelEl.textContent = text;
+        }
+    }
+
+    // Close custom dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        const fromContainer = document.getElementById('currency-from-container');
+        const toContainer = document.getElementById('currency-to-container');
+        if (fromContainer && !fromContainer.contains(e.target)) {
+            document.getElementById('currency-from-menu')?.classList.add('hidden');
+        }
+        if (toContainer && !toContainer.contains(e.target)) {
+            document.getElementById('currency-to-menu')?.classList.add('hidden');
+        }
+    });
+
     function runConverter() {
         const amount = parseFloat(document.getElementById('amount-input').value) || 0;
         const fromCode = document.getElementById('currency-from').value;
@@ -631,16 +814,18 @@
         let converted = toCode === 'IDR' ? inIdr : (inIdr * toRate);
 
         const fromOption = document.getElementById('currency-from').querySelector(`option[value="${fromCode}"]`);
-        const fromFlag = fromOption ? (fromOption.getAttribute('data-flag') || '🇮🇩') : '🇮🇩';
+        const fromFlagCode = fromOption ? (fromOption.getAttribute('data-flag') || 'id') : 'id';
 
         const toOption = document.getElementById('currency-to').querySelector(`option[value="${toCode}"]`);
         const toSymbol = toOption ? toOption.getAttribute('data-symbol') : '';
-        const toFlag = toOption ? (toOption.getAttribute('data-flag') || '') : '';
+        const toFlagCode = toOption ? (toOption.getAttribute('data-flag') || 'id') : 'id';
 
-        // Display flag
+        // Display flag icon using flag-icons CSS
         const flagEl = document.getElementById('converted-flag');
-        if (flagEl && toFlag) {
-            flagEl.textContent = toFlag;
+        if (flagEl && toFlagCode) {
+            flagEl.className = `fi fi-${toFlagCode} fis shrink-0 leading-none pl-1`;
+            flagEl.style.fontSize = '24px';
+            flagEl.style.borderRadius = '3px';
         }
 
         // Display
@@ -649,12 +834,12 @@
             resEl.textContent = toSymbol + ' ' + converted.toLocaleString('id-ID', { maximumFractionDigits: 2 }) + ' ' + toCode;
         }
 
-        // Formula with Country Flags
+        // Formula with Country Flag Icons
         const formulaEl = document.getElementById('conversion-formula');
         if (formulaEl) {
             const oneUnitTo = toRate > 0 ? (fromRate / toRate) : 0;
             const oneUnitFrom = fromRate > 0 ? (toRate / fromRate) : 0;
-            formulaEl.textContent = `Kurs Acuan: ${fromFlag} 1 ${fromCode} = ${toFlag} ${oneUnitFrom.toFixed(4)} ${toCode} | ${toFlag} 1 ${toCode} = ${fromFlag} ${oneUnitTo.toFixed(4)} ${fromCode}`;
+            formulaEl.innerHTML = `Kurs Acuan: <span class="fi fi-${fromFlagCode} fis" style="font-size:12px;border-radius:1px;"></span> 1 ${fromCode} = <span class="fi fi-${toFlagCode} fis" style="font-size:12px;border-radius:1px;"></span> ${oneUnitFrom.toFixed(4)} ${toCode} | <span class="fi fi-${toFlagCode} fis" style="font-size:12px;border-radius:1px;"></span> 1 ${toCode} = <span class="fi fi-${fromFlagCode} fis" style="font-size:12px;border-radius:1px;"></span> ${oneUnitTo.toFixed(4)} ${fromCode}`;
         }
     }
 
@@ -666,12 +851,16 @@
         fromSel.value = toSel.value;
         toSel.value = temp;
 
+        updateDropdownUI('from', fromSel.value);
+        updateDropdownUI('to', toSel.value);
+
         runConverter();
     }
 
     function setQuickCurrency(code) {
         const toSel = document.getElementById('currency-to');
         toSel.value = code;
+        updateDropdownUI('to', code);
         runConverter();
     }
 

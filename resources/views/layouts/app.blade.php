@@ -48,6 +48,9 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- Flag Icons CSS (SVG country flags for Windows compatibility) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
+
     <!-- Leaflet.js CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -56,8 +59,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        @font-face {
+            font-family: "Twemoji Country Flags";
+            src: url("https://cdn.jsdelivr.net/npm/country-flag-emoji-polyfill@0.1.8/dist/TwemojiCountryFlags.woff2") format("woff2");
+            unicode-range: U+1F1E6-1F1FF, U+1F3F4, U+E0062-E007F;
+            font-display: swap;
+        }
+        body { font-family: 'Inter', 'Twemoji Country Flags', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', 'Twemoji Country Flags', monospace; }
         /* Clean corporate scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }

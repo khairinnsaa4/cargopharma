@@ -73,14 +73,14 @@ class TimeApiService
     public function getGlobalHubsTime(): array
     {
         $hubs = [
-            ['hub' => 'Bio Farma Production HQ', 'city' => 'Bandung', 'country' => 'Indonesia', 'flag' => '🇮🇩', 'code' => 'BDO', 'tz' => 'Asia/Jakarta', 'desc' => 'Pusat Produksi Vaksin WHO'],
-            ['hub' => 'JAS Cargo Hub Soetta', 'city' => 'Jakarta / Tangerang', 'country' => 'Indonesia', 'flag' => '🇮🇩', 'code' => 'CGK', 'tz' => 'Asia/Jakarta', 'desc' => 'Gerbang Ekspor Farmasi'],
-            ['hub' => 'Changi Cargo Mega Hub', 'city' => 'Singapura', 'country' => 'Singapura', 'flag' => '🇸🇬', 'code' => 'SIN', 'tz' => 'Asia/Singapore', 'desc' => 'Hub Farmasi Asia Tenggara'],
-            ['hub' => 'Emirates SkyPharma DWC', 'city' => 'Dubai', 'country' => 'UAE', 'flag' => '🇦🇪', 'code' => 'DXB', 'tz' => 'Asia/Dubai', 'desc' => 'Hub Transit Rantai Dingin Utama'],
-            ['hub' => 'NPHCDA National Vaccine Store', 'city' => 'Abuja', 'country' => 'Nigeria', 'flag' => '🇳🇬', 'code' => 'ABV', 'tz' => 'Africa/Lagos', 'desc' => 'Fasilitas Distribusi Afrika Barat'],
-            ['hub' => 'Port of Rotterdam Logistics', 'city' => 'Rotterdam', 'country' => 'Belanda', 'flag' => '🇳🇱', 'code' => 'RTM', 'tz' => 'Europe/Amsterdam', 'desc' => 'Hub Kontainer Laut Maritim Eropa'],
-            ['hub' => 'Lufthansa Cargo Cool Center', 'city' => 'Frankfurt', 'country' => 'Jerman', 'flag' => '🇩🇪', 'code' => 'FRA', 'tz' => 'Europe/Berlin', 'desc' => 'Hub Farmasi Eropa Tengah'],
-            ['hub' => 'WHO / UN Health Logistics HQ', 'city' => 'Jenewa', 'country' => 'Swiss', 'flag' => '🇨🇭', 'code' => 'GVA', 'tz' => 'Europe/Zurich', 'desc' => 'Pusat Koordinasi Kesehatan PBB'],
+            ['hub' => 'Bio Farma Production HQ', 'city' => 'Bandung', 'country' => 'Indonesia', 'flag' => '🇮🇩', 'country_code' => 'id', 'code' => 'BDO', 'tz' => 'Asia/Jakarta', 'desc' => 'Pusat Produksi Vaksin WHO'],
+            ['hub' => 'JAS Cargo Hub Soetta', 'city' => 'Jakarta / Tangerang', 'country' => 'Indonesia', 'flag' => '🇮🇩', 'country_code' => 'id', 'code' => 'CGK', 'tz' => 'Asia/Jakarta', 'desc' => 'Gerbang Ekspor Farmasi'],
+            ['hub' => 'Changi Cargo Mega Hub', 'city' => 'Singapura', 'country' => 'Singapura', 'flag' => '🇸🇬', 'country_code' => 'sg', 'code' => 'SIN', 'tz' => 'Asia/Singapore', 'desc' => 'Hub Farmasi Asia Tenggara'],
+            ['hub' => 'Emirates SkyPharma DWC', 'city' => 'Dubai', 'country' => 'UAE', 'flag' => '🇦🇪', 'country_code' => 'ae', 'code' => 'DXB', 'tz' => 'Asia/Dubai', 'desc' => 'Hub Transit Rantai Dingin Utama'],
+            ['hub' => 'NPHCDA National Vaccine Store', 'city' => 'Abuja', 'country' => 'Nigeria', 'flag' => '🇳🇬', 'country_code' => 'ng', 'code' => 'ABV', 'tz' => 'Africa/Lagos', 'desc' => 'Fasilitas Distribusi Afrika Barat'],
+            ['hub' => 'Port of Rotterdam Logistics', 'city' => 'Rotterdam', 'country' => 'Belanda', 'flag' => '🇳🇱', 'country_code' => 'nl', 'code' => 'RTM', 'tz' => 'Europe/Amsterdam', 'desc' => 'Hub Kontainer Laut Maritim Eropa'],
+            ['hub' => 'Lufthansa Cargo Cool Center', 'city' => 'Frankfurt', 'country' => 'Jerman', 'flag' => '🇩🇪', 'country_code' => 'de', 'code' => 'FRA', 'tz' => 'Europe/Berlin', 'desc' => 'Hub Farmasi Eropa Tengah'],
+            ['hub' => 'WHO / UN Health Logistics HQ', 'city' => 'Jenewa', 'country' => 'Swiss', 'flag' => '🇨🇭', 'country_code' => 'ch', 'code' => 'GVA', 'tz' => 'Europe/Zurich', 'desc' => 'Pusat Koordinasi Kesehatan PBB'],
         ];
 
         $results = [];
