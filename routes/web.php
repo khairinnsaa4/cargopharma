@@ -15,7 +15,9 @@ use App\Http\Controllers\Web\ShipmentController;
 use App\Http\Controllers\Web\TrackingController;
 use App\Http\Controllers\Web\TrackingPageController;
 use App\Http\Controllers\Web\UserController;
+use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,12 +40,47 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/run-migrate', function () {
     try {
         Artisan::call('migrate', ['--force' => true]);
-        Artisan::call('db:seed', ['--force' => true]);
+
+        // Explicitly update or create default users with guaranteed known password
+        User::updateOrCreate(
+            ['email' => 'admin@cargopharma.com'],
+            [
+                'name' => 'Administrator Bio Farma',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'is_active' => true,
+                'phone' => '+62 811-2233-4455',
+                'organization' => 'PT Bio Farma (Persero) - Headquarters',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'operator@cargopharma.com'],
+            [
+                'name' => 'Rian Pratama',
+                'password' => Hash::make('password'),
+                'role' => 'operator',
+                'is_active' => true,
+                'phone' => '+62 812-9988-7766',
+                'organization' => 'PT Bio Farma - Global Export & Cold Chain Logistics',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'customer@unicef.org'],
+            [
+                'name' => 'Dr. Adebayo Johnson',
+                'password' => Hash::make('password'),
+                'role' => 'customer',
+                'is_active' => true,
+                'phone' => '+45 35 27 35 27',
+                'organization' => 'UNICEF Global Supply Division (Polio Outbreak Response)',
+            ]
+        );
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Database Supabase berhasil dimigrasikan dan diisi data seed pengguna!',
-            'output' => Artisan::output(),
+            'message' => 'Database Supabase berhasil dimigrasikan dan password ketiga akun dipastikan "password"!',
         ]);
     } catch (Throwable $e) {
         return response()->json([
