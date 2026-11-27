@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-100 text-slate-800">
+<html lang="en" class="h-full text-slate-800">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,6 +67,24 @@
         }
         body { font-family: 'Inter', 'Twemoji Country Flags', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', 'Twemoji Country Flags', monospace; }
+
+        /* ── Animated background: teal gradient sesuai tema sidebar ── */
+        @keyframes bgShift {
+            0%   { background-position: 0% 50%, 100% 50%, 0 0; }
+            50%  { background-position: 100% 50%, 0% 50%, 0 0; }
+            100% { background-position: 0% 50%, 100% 50%, 0 0; }
+        }
+
+        .main-bg {
+            background-color: #f0fdf8;
+            background-image:
+                radial-gradient(ellipse 70% 60% at 15% 10%, rgba(13,148,136,0.18) 0%, transparent 65%),
+                radial-gradient(ellipse 55% 50% at 85% 85%, rgba(20,184,166,0.13) 0%, transparent 65%),
+                radial-gradient(ellipse 45% 40% at 50% 50%, rgba(5,150,105,0.07) 0%, transparent 70%);
+            background-size: 200% 200%, 200% 200%, 100% 100%;
+            animation: bgShift 12s ease-in-out infinite;
+        }
+
         /* Clean corporate scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -85,7 +103,7 @@
         }
     </style>
 </head>
-<body class="h-full flex overflow-hidden bg-[#F4F7F6]">
+<body class="h-full flex overflow-hidden main-bg">
 
     <!-- CLINICAL HEALTHCARE SIDEBAR (Deep Forest Teal #0A1E1D) -->
     <aside class="w-64 bg-[#0A1E1D] text-slate-300 flex flex-col shrink-0 z-20 shadow-xl border-r border-teal-950/60">
