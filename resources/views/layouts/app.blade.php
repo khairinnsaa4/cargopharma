@@ -68,7 +68,11 @@
         body { font-family: 'Inter', 'Twemoji Country Flags', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', 'Twemoji Country Flags', monospace; }
 
-        /* ── Animated background: teal gradient sesuai tema sidebar ── */
+        /* ── Animated background: teal gradient + particle network ── */
+        @keyframes bgBreath {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.82; }
+        }
         @keyframes bgShift {
             0%   { background-position: 0% 50%, 100% 50%, 0 0; }
             50%  { background-position: 100% 50%, 0% 50%, 0 0; }
@@ -76,14 +80,28 @@
         }
 
         .main-bg {
-            background-color: #f0fdf8;
+            position: relative;
+            background-color: #edfaf6;
             background-image:
-                radial-gradient(ellipse 70% 60% at 15% 10%, rgba(13,148,136,0.18) 0%, transparent 65%),
-                radial-gradient(ellipse 55% 50% at 85% 85%, rgba(20,184,166,0.13) 0%, transparent 65%),
-                radial-gradient(ellipse 45% 40% at 50% 50%, rgba(5,150,105,0.07) 0%, transparent 70%);
+                radial-gradient(ellipse 80% 65% at 10% 5%,  rgba(13,148,136,0.20) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 55% at 88% 88%, rgba(20,184,166,0.15) 0%, transparent 65%),
+                radial-gradient(ellipse 50% 45% at 55% 48%, rgba(5,150,105,0.09) 0%, transparent 70%);
             background-size: 200% 200%, 200% 200%, 100% 100%;
-            animation: bgShift 12s ease-in-out infinite;
+            animation: bgShift 14s ease-in-out infinite;
         }
+
+        /* Canvas particle network — fixed behind everything */
+        #bg-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Semua konten di atas canvas */
+        body > * { position: relative; z-index: 1; }
 
         /* Clean corporate scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -104,6 +122,98 @@
     </style>
 </head>
 <body class="h-full flex overflow-hidden main-bg">
+
+    <!-- PARTICLE NETWORK CANVAS BACKGROUND -->
+    <canvas id="bg-canvas"></canvas>
+    <script>
+    (function() {
+        const canvas = document.getElementById('bg-canvas');
+        const ctx    = canvas.getContext('2d');
+
+        // Particle config — teal palette
+        const CFG = {
+            count:       52,
+            connectDist: 155,
+            speed:       0.38,
+            dotR:        2.2,
+            lineAlpha:   0.13,
+            dotAlpha:    0.28,
+            colors:      ['#0d9488','#14b8a6','#0f766e','#5eead4','#0891b2'],
+        };
+
+        let W, H, particles = [];
+
+        function resize() {
+            W = canvas.width  = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+
+        function rand(min, max) { return Math.random() * (max - min) + min; }
+
+        function spawn() {
+            return {
+                x:  rand(0, W), y:  rand(0, H),
+                vx: rand(-CFG.speed, CFG.speed) || 0.1,
+                vy: rand(-CFG.speed, CFG.speed) || 0.1,
+                r:  rand(1.4, CFG.dotR),
+                color: CFG.colors[Math.floor(Math.random() * CFG.colors.length)],
+                pulse: rand(0, Math.PI * 2),
+            };
+        }
+
+        function init() {
+            resize();
+            particles = Array.from({ length: CFG.count }, spawn);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+
+            // Update & draw particles
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x += p.vx; p.y += p.vy;
+                p.pulse += 0.025;
+
+                // Bounce off edges
+                if (p.x < 0 || p.x > W) p.vx *= -1;
+                if (p.y < 0 || p.y > H) p.vy *= -1;
+
+                // Draw node with pulse glow
+                const glow = 1 + 0.3 * Math.sin(p.pulse);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * glow, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = CFG.dotAlpha * glow;
+                ctx.fill();
+
+                // Draw connections
+                for (let j = i + 1; j < particles.length; j++) {
+                    const q   = particles[j];
+                    const dx  = p.x - q.x, dy = p.y - q.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < CFG.connectDist) {
+                        const alpha = CFG.lineAlpha * (1 - dist / CFG.connectDist);
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(q.x, q.y);
+                        ctx.strokeStyle = p.color;
+                        ctx.globalAlpha = alpha;
+                        ctx.lineWidth   = 0.8;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', init);
+        init();
+        draw();
+    })();
+    </script>
 
     <!-- CLINICAL HEALTHCARE SIDEBAR (Deep Forest Teal #0A1E1D) -->
     <aside class="w-64 bg-[#0A1E1D] text-slate-300 flex flex-col shrink-0 z-20 shadow-xl border-r border-teal-950/60">
