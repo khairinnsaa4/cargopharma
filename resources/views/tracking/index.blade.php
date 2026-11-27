@@ -242,8 +242,10 @@
         padding: 0;
         overflow: hidden;
         border-radius: 10px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e2e8f0;
+        background: #071d1b;
+        color: #e2e8f0;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 18px rgba(20, 184, 166, 0.2);
+        border: 1px solid rgba(45, 212, 191, 0.35);
     }
     .cargopharma-popup .leaflet-popup-content {
         margin: 0;
@@ -251,7 +253,7 @@
         width: 275px !important;
     }
     .cargopharma-popup .leaflet-popup-tip {
-        background: #ffffff;
+        background: #071d1b;
     }
 </style>
 

@@ -873,12 +873,12 @@
                 scales: {
                     x: {
                         beginAtZero: true,
-                        grid: { color: '#f1f5f9' },
-                        ticks: { stepSize: 1, font: { family: 'JetBrains Mono', size: 10 } }
+                        grid: { color: 'rgba(20, 184, 166, 0.14)' },
+                        ticks: { stepSize: 1, font: { family: 'JetBrains Mono', size: 10 }, color: '#94a3b8' }
                     },
                     y: {
                         grid: { display: false },
-                        ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#334155' }
+                        ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#ccfbf1' }
                     }
                 }
             }
@@ -898,8 +898,8 @@
                     data: carrierData,
                     backgroundColor: carrierColors,
                     borderWidth: 2,
-                    borderColor: '#ffffff',
-                    hoverOffset: 3
+                    borderColor: '#081d1b',
+                    hoverOffset: 4
                 }]
             },
             options: {

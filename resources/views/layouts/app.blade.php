@@ -69,24 +69,22 @@
         .font-mono { font-family: 'JetBrains Mono', 'Twemoji Country Flags', monospace; }
 
         /* ── Animated background: teal gradient + particle network ── */
-        @keyframes bgBreath {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.82; }
-        }
         @keyframes bgShift {
-            0%   { background-position: 0% 50%, 100% 50%, 0 0; }
-            50%  { background-position: 100% 50%, 0% 50%, 0 0; }
-            100% { background-position: 0% 50%, 100% 50%, 0 0; }
+            0%   { background-position: 0% 50%, 100% 50%, 50% 0%, 0 0, 0 0; }
+            50%  { background-position: 100% 50%, 0% 50%, 50% 100%, 0 0, 0 0; }
+            100% { background-position: 0% 50%, 100% 50%, 50% 0%, 0 0, 0 0; }
         }
 
         .main-bg {
             position: relative;
-            background-color: #edfaf6;
+            background-color: #03100f;
             background-image:
-                radial-gradient(ellipse 80% 65% at 10% 5%,  rgba(13,148,136,0.20) 0%, transparent 65%),
-                radial-gradient(ellipse 60% 55% at 88% 88%, rgba(20,184,166,0.15) 0%, transparent 65%),
-                radial-gradient(ellipse 50% 45% at 55% 48%, rgba(5,150,105,0.09) 0%, transparent 70%);
-            background-size: 200% 200%, 200% 200%, 100% 100%;
+                radial-gradient(ellipse 75% 60% at 12% 8%,  rgba(20,184,166,0.34) 0%, transparent 62%),
+                radial-gradient(ellipse 65% 55% at 88% 88%, rgba(6,182,212,0.26) 0%, transparent 62%),
+                radial-gradient(ellipse 50% 45% at 52% 48%, rgba(16,185,129,0.18) 0%, transparent 68%),
+                linear-gradient(rgba(20,184,166,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(20,184,166,0.05) 1px, transparent 1px);
+            background-size: 200% 200%, 200% 200%, 160% 160%, 44px 44px, 44px 44px;
             animation: bgShift 14s ease-in-out infinite;
         }
 
@@ -103,150 +101,297 @@
         /* Semua konten di atas canvas */
         body > * { position: relative; z-index: 1; }
 
-        /* ── Scrollbar: teal-tinted ── */
+        /* ── Scrollbar: teal-tinted dark ── */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(13,148,136,0.06); }
-        ::-webkit-scrollbar-thumb { background: rgba(20,184,166,0.30); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(20,184,166,0.55); }
+        ::-webkit-scrollbar-track { background: #041312; }
+        ::-webkit-scrollbar-thumb { background: rgba(20,184,166,0.45); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(45,212,191,0.80); }
 
-        /* ── Leaflet map cursor ── */
-        .leaflet-container { cursor: grab !important; }
+        /* ── Leaflet map cursor & dark controls/popups ── */
+        .leaflet-container { cursor: grab !important; background: #041312 !important; }
         .leaflet-container:active,
         .leaflet-dragging,
         .leaflet-dragging .leaflet-grab,
         .leaflet-dragging .leaflet-interactive { cursor: grabbing !important; }
+        .leaflet-bar a {
+            background-color: rgba(6, 26, 24, 0.92) !important;
+            color: #5eead4 !important;
+            border-bottom: 1px solid rgba(20, 184, 166, 0.28) !important;
+        }
+        .leaflet-bar a:hover {
+            background-color: #0d9488 !important;
+            color: #ffffff !important;
+        }
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+            background: #071d1b !important;
+            color: #e2e8f0 !important;
+            border: 1px solid rgba(20, 184, 166, 0.30) !important;
+        }
+        .leaflet-tooltip {
+            background: rgba(5, 22, 21, 0.94) !important;
+            color: #ccfbf1 !important;
+            border: 1px solid rgba(20, 184, 166, 0.40) !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+        }
 
-        /* ══════════════════════════════════════════
-           GLOBAL DARK-TEAL THEME OVERRIDES
-           Kartu, tabel, form, badge — semua selaras
-        ══════════════════════════════════════════ */
+        /* ══════════════════════════════════════════════
+           FULL STRIKING DARK-TEAL THEME — ZERO WHITE
+           Semua elemen mengikuti palet obsidian + neon teal/cyan
+        ══════════════════════════════════════════════ */
 
-        /* Base text */
-        body { color: #0f2d2b; }
+        html, body { color: #d1fae5; }
 
-        /* ── Topbar ── */
+        /* ── Topbar: glowing dark glass ── */
         header.topbar {
-            background: rgba(255,255,255,0.78);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(13,148,136,0.18);
-            box-shadow: 0 1px 12px rgba(13,148,136,0.08);
+            background: rgba(4, 18, 17, 0.86);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(45, 212, 191, 0.25);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(45, 212, 191, 0.12);
         }
 
-        /* ── White cards → glass teal ── */
-        .bg-white {
-            background: rgba(255,255,255,0.72) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        /* ── Override semua latar putih & terang → dark glass teal ── */
+        .bg-white,
+        .bg-white\/95,
+        .bg-white\/90,
+        .bg-white\/80 {
+            background: rgba(8, 29, 27, 0.88) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-color: rgba(20, 184, 166, 0.24) !important;
+        }
+        .bg-slate-50,
+        .bg-slate-50\/50,
+        .bg-slate-50\/60,
+        .bg-slate-50\/80,
+        .bg-gray-50 {
+            background: rgba(6, 22, 21, 0.82) !important;
+        }
+        .bg-slate-100,
+        .bg-gray-100 {
+            background: rgba(20, 184, 166, 0.13) !important;
+        }
+        .bg-slate-200 {
+            background: rgba(20, 184, 166, 0.20) !important;
         }
 
-        /* ── Stat cards border glow ── */
+        /* ── Light Gradient Boxes → Vibrant Dark Teal/Cyan Gradient ── */
+        [class*="from-teal-50"],
+        [class*="from-slate-50"],
+        [class*="from-emerald-50"],
+        [class*="from-cyan-50"] {
+            background-image: linear-gradient(135deg, rgba(13, 148, 136, 0.24), rgba(6, 182, 212, 0.14)) !important;
+            background-color: rgba(8, 29, 27, 0.90) !important;
+            border-color: rgba(45, 212, 191, 0.30) !important;
+        }
+
+        /* ── Hover states that used to flash light/white ── */
+        .hover\:bg-slate-50:hover,
+        .hover\:bg-slate-50\/60:hover,
+        .hover\:bg-slate-50\/80:hover,
+        .hover\:bg-slate-100:hover,
+        .hover\:bg-teal-50:hover,
+        .hover\:bg-teal-100:hover {
+            background: rgba(20, 184, 166, 0.22) !important;
+        }
+        .hover\:bg-rose-50:hover {
+            background: rgba(244, 63, 94, 0.22) !important;
+        }
+        .hover\:bg-rose-100:hover {
+            background: rgba(244, 63, 94, 0.28) !important;
+        }
+        .hover\:text-teal-700:hover,
+        .hover\:text-teal-900:hover {
+            color: #5eead4 !important;
+        }
+
+        /* ── Border & Divider overrides ── */
+        .border-slate-100,
         .border-slate-200,
-        .border-slate-200\/90 {
-            border-color: rgba(13,148,136,0.18) !important;
+        .border-slate-200\/60,
+        .border-slate-200\/80,
+        .border-slate-200\/90,
+        .border-slate-300,
+        .border-gray-200,
+        .border-gray-300 {
+            border-color: rgba(20, 184, 166, 0.22) !important;
+        }
+        .divide-slate-100 > * + *,
+        .divide-slate-200 > * + * {
+            border-color: rgba(20, 184, 166, 0.14) !important;
         }
 
-        /* ── Tables ── */
-        table { border-collapse: separate; border-spacing: 0; }
+        /* ── Text overrides (membuat semua teks terbaca jelas & mencolok) ── */
+        .text-slate-900, .text-gray-900 { color: #f0fdfa !important; }
+        .text-slate-800, .text-gray-800 { color: #ccfbf1 !important; }
+        .text-slate-700, .text-gray-700 { color: #99f6e4 !important; }
+        .text-slate-600, .text-gray-600 { color: #5eead4 !important; }
+        .text-slate-500, .text-gray-500 { color: #94a3b8 !important; }
+        .text-slate-400 { color: #7dd3c8 !important; }
+        .text-slate-300 { color: #cbd5e1 !important; }
+        .text-teal-950, .text-teal-900, .text-teal-800, .text-teal-700 { color: #2dd4bf !important; }
+        .text-indigo-900, .text-indigo-700 { color: #a5b4fc !important; }
+        .text-blue-900, .text-blue-800, .text-blue-700 { color: #60a5fa !important; }
+        .text-sky-800, .text-sky-700 { color: #38bdf8 !important; }
+        .text-orange-600, .text-orange-700 { color: #fb923c !important; }
+
+        /* ── Tables: full dark glowing ── */
+        table { border-collapse: separate; border-spacing: 0; width: 100%; }
+        thead tr { background: rgba(4, 18, 17, 0.85) !important; }
         thead th {
-            background: rgba(13,148,136,0.09) !important;
-            color: #0f766e !important;
-            font-size: 0.7rem;
-            letter-spacing: 0.06em;
+            background: transparent !important;
+            color: #2dd4bf !important;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            border-bottom: 1px solid rgba(13,148,136,0.18) !important;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(45, 212, 191, 0.25) !important;
+            padding: 10px 12px;
         }
-        tbody tr {
-            background: rgba(255,255,255,0.65) !important;
-            transition: background 0.15s;
-        }
-        tbody tr:hover { background: rgba(20,184,166,0.08) !important; }
+        tbody tr { background: rgba(8, 29, 27, 0.60) !important; transition: background 0.15s; }
+        tbody tr:hover { background: rgba(20, 184, 166, 0.14) !important; }
         tbody td {
-            border-bottom: 1px solid rgba(13,148,136,0.09) !important;
-            color: #134e4a;
+            border-bottom: 1px solid rgba(20, 184, 166, 0.10) !important;
+            color: #cbd5e1 !important;
+            padding: 10px 12px;
         }
 
-        /* ── Form inputs ── */
+        /* ── Form inputs: dark glowing ── */
         input[type="text"],
         input[type="email"],
         input[type="password"],
         input[type="number"],
         input[type="search"],
         input[type="date"],
+        input[type="datetime-local"],
         select,
         textarea {
-            background: rgba(255,255,255,0.75) !important;
-            border-color: rgba(13,148,136,0.22) !important;
-            color: #0f2d2b !important;
+            background: rgba(4, 18, 17, 0.88) !important;
+            border-color: rgba(20, 184, 166, 0.28) !important;
+            color: #f0fdfa !important;
+            border-radius: 0.5rem;
         }
+        input::placeholder, textarea::placeholder { color: rgba(148, 163, 184, 0.55) !important; }
         input:focus, select:focus, textarea:focus {
-            border-color: rgba(13,148,136,0.55) !important;
-            box-shadow: 0 0 0 3px rgba(20,184,166,0.12) !important;
+            border-color: rgba(45, 212, 191, 0.75) !important;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.22) !important;
             outline: none !important;
+            background: rgba(5, 22, 21, 0.98) !important;
+        }
+        select option { background: #071b19; color: #f0fdfa; }
+        label { color: #99f6e4 !important; }
+
+        /* ── Cards & panels: glowing dark glass ── */
+        .rounded-xl, .rounded-2xl {
+            box-shadow: 0 6px 28px rgba(0, 0, 0, 0.42),
+                        0 0 0 1px rgba(45, 212, 191, 0.16),
+                        inset 0 1px 0 rgba(94, 234, 212, 0.08);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .rounded-xl:hover, .rounded-2xl:hover {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.50),
+                        0 0 0 1px rgba(45, 212, 191, 0.30),
+                        0 0 22px rgba(20, 184, 166, 0.10),
+                        inset 0 1px 0 rgba(94, 234, 212, 0.14);
         }
 
-        /* ── Badges & pills (slate) → teal ── */
-        .bg-slate-100 { background: rgba(20,184,166,0.10) !important; }
-        .text-slate-600 { color: #0f766e !important; }
-        .text-slate-500 { color: #0d9488 !important; }
-        .text-slate-700 { color: #0f2d2b !important; }
-        .text-slate-800 { color: #0a1e1d !important; }
-        .text-slate-900 { color: #071615 !important; }
+        /* ── Stat card & tinted icon containers (mencolok) ── */
+        .bg-teal-50   { background: rgba(20, 184, 166, 0.20) !important; }
+        .bg-emerald-50 { background: rgba(16, 185, 129, 0.20) !important; }
+        .bg-cyan-50    { background: rgba(6, 182, 212, 0.20) !important; }
+        .bg-sky-50     { background: rgba(14, 165, 233, 0.20) !important; }
+        .bg-rose-50, .bg-rose-50\/50 { background: rgba(244, 63, 94, 0.18) !important; }
+        .bg-amber-50   { background: rgba(245, 158, 11, 0.20) !important; }
+        .bg-orange-50  { background: rgba(249, 115, 22, 0.20) !important; }
+        .bg-indigo-50  { background: rgba(99, 102, 241, 0.20) !important; }
+        .bg-violet-50  { background: rgba(139, 92, 246, 0.20) !important; }
+        .bg-blue-50    { background: rgba(59, 130, 246, 0.20) !important; }
+
+        /* ── Badges ── */
+        .bg-emerald-100 { background: rgba(16, 185, 129, 0.22) !important; }
+        .text-emerald-700, .text-emerald-800 { color: #34d399 !important; }
+        .bg-rose-100   { background: rgba(244, 63, 94, 0.22) !important; }
+        .text-rose-600, .text-rose-700, .text-rose-800 { color: #fb7185 !important; }
+        .bg-amber-100  { background: rgba(245, 158, 11, 0.22) !important; }
+        .text-amber-700, .text-amber-800 { color: #fbbf24 !important; }
+        .bg-cyan-100   { background: rgba(6, 182, 212, 0.22) !important; }
+        .text-cyan-700, .text-cyan-800 { color: #22d3ee !important; }
+        .bg-blue-100   { background: rgba(59, 130, 246, 0.22) !important; }
+        .bg-indigo-100 { background: rgba(99, 102, 241, 0.22) !important; }
+        .bg-teal-100, .bg-teal-100\/70 { background: rgba(20, 184, 166, 0.22) !important; }
+
+        .border-emerald-100, .border-emerald-200, .border-emerald-300 { border-color: rgba(16, 185, 129, 0.35) !important; }
+        .border-rose-100, .border-rose-200, .border-rose-200\/60 { border-color: rgba(244, 63, 94, 0.35) !important; }
+        .border-amber-100, .border-amber-200 { border-color: rgba(245, 158, 11, 0.35) !important; }
+        .border-orange-100, .border-orange-200 { border-color: rgba(249, 115, 22, 0.35) !important; }
+        .border-teal-100, .border-teal-200, .border-teal-200\/80, .border-teal-200\/90, .border-teal-300 { border-color: rgba(45, 212, 191, 0.35) !important; }
+        .border-cyan-100, .border-cyan-200 { border-color: rgba(6, 182, 212, 0.35) !important; }
+        .border-sky-100, .border-sky-200 { border-color: rgba(14, 165, 233, 0.35) !important; }
+        .border-indigo-100, .border-indigo-200, .border-indigo-300 { border-color: rgba(99, 102, 241, 0.35) !important; }
+        .border-blue-100, .border-blue-200, .border-blue-300 { border-color: rgba(59, 130, 246, 0.35) !important; }
+
+        /* ── Buttons: vibrant neon teal glow on hover ── */
+        .bg-teal-600 {
+            background: linear-gradient(135deg, #0d9488, #14b8a6) !important;
+            box-shadow: 0 2px 14px rgba(20, 184, 166, 0.30);
+        }
+        .bg-teal-600:hover, .bg-teal-500:hover {
+            box-shadow: 0 0 24px rgba(45, 212, 191, 0.55);
+            transform: translateY(-1px);
+        }
+        .bg-rose-500:hover, .bg-red-500:hover {
+            box-shadow: 0 0 18px rgba(244, 63, 94, 0.48);
+        }
+
+        /* ── Page headings ── */
+        h1, h2, h3, h4 { color: #f0fdfa !important; }
+        p { color: #94a3b8; }
 
         /* ── Flash notifications ── */
         .flash-success {
-            background: rgba(16,185,129,0.10);
-            border-color: rgba(16,185,129,0.28);
-            color: #065f46;
+            background: rgba(16, 185, 129, 0.16) !important;
+            border-color: rgba(16, 185, 129, 0.40) !important;
+            color: #6ee7b7 !important;
         }
         .flash-warning {
-            background: rgba(245,158,11,0.10);
-            border-color: rgba(245,158,11,0.28);
-            color: #78350f;
+            background: rgba(245, 158, 11, 0.16) !important;
+            border-color: rgba(245, 158, 11, 0.40) !important;
+            color: #fcd34d !important;
         }
         .flash-error {
-            background: rgba(239,68,68,0.10);
-            border-color: rgba(239,68,68,0.28);
-            color: #7f1d1d;
+            background: rgba(244, 63, 94, 0.16) !important;
+            border-color: rgba(244, 63, 94, 0.40) !important;
+            color: #fda4af !important;
         }
 
-        /* ── Buttons: primary teal glow ── */
-        .btn-teal,
-        button[type="submit"]:not(.no-style),
-        a.btn-primary {
-            transition: box-shadow 0.2s, transform 0.15s;
-        }
-        .bg-teal-600:hover, .bg-teal-500:hover {
-            box-shadow: 0 4px 18px rgba(20,184,166,0.35);
-        }
-
-        /* ── Page section headings ── */
-        h1, h2, h3 { color: #0a1e1d; }
-
-        /* ── Rounded panels / section boxes ── */
-        .rounded-xl, .rounded-2xl {
-            box-shadow: 0 2px 16px rgba(13,148,136,0.07);
-        }
-
-        /* ── Live Monitoring badge ── */
+        /* ── Live badge ── */
         .live-badge {
-            background: rgba(20,184,166,0.12);
-            border: 1px solid rgba(20,184,166,0.30);
-            color: #0f766e;
+            background: rgba(20, 184, 166, 0.18);
+            border: 1px solid rgba(45, 212, 191, 0.45);
+            color: #5eead4;
+            box-shadow: 0 0 14px rgba(20, 184, 166, 0.18);
         }
 
         /* ── Topbar search ── */
         .search-topbar {
-            background: rgba(255,255,255,0.65) !important;
-            border: 1px solid rgba(13,148,136,0.22) !important;
+            background: rgba(4, 18, 17, 0.80) !important;
+            border: 1px solid rgba(45, 212, 191, 0.28) !important;
+            color: #f0fdfa !important;
         }
+        .search-topbar::placeholder { color: rgba(148, 163, 184, 0.60) !important; }
         .search-topbar:focus {
-            background: rgba(255,255,255,0.90) !important;
-            border-color: rgba(13,148,136,0.50) !important;
+            background: rgba(5, 22, 21, 0.98) !important;
+            border-color: rgba(45, 212, 191, 0.65) !important;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18) !important;
         }
 
-        /* ── Main scrollable area subtle tint ── */
-        main { background: transparent; }
+        /* ── Smooth card entry animation ── */
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .rounded-xl, .rounded-2xl { animation: cardIn 0.4s ease both; }
     </style>
 </head>
 <body class="h-full flex overflow-hidden main-bg">
@@ -258,15 +403,14 @@
         const canvas = document.getElementById('bg-canvas');
         const ctx    = canvas.getContext('2d');
 
-        // Particle config — teal palette
         const CFG = {
-            count:       52,
-            connectDist: 155,
-            speed:       0.38,
-            dotR:        2.2,
-            lineAlpha:   0.13,
-            dotAlpha:    0.28,
-            colors:      ['#0d9488','#14b8a6','#0f766e','#5eead4','#0891b2'],
+            count:       60,
+            connectDist: 160,
+            speed:       0.42,
+            dotR:        2.6,
+            lineAlpha:   0.22,
+            dotAlpha:    0.55,
+            colors:      ['#14b8a6','#2dd4bf','#0d9488','#5eead4','#06b6d4','#34d399'],
         };
 
         let W, H, particles = [];
@@ -446,9 +590,9 @@
             <!-- Search Input -->
             <div class="flex items-center gap-4 flex-1 max-w-md">
                 <form action="{{ route('shipments.index') }}" method="GET" class="w-full relative">
-                    <i data-lucide="search" class="w-4 h-4 text-teal-500/60 absolute left-3 top-2.5"></i>
+                    <i data-lucide="search" class="w-4 h-4 text-teal-400/80 absolute left-3 top-2.5"></i>
                     <input type="text" name="search" placeholder="Cari resi, kurir, rute..."
-                        class="search-topbar w-full pl-9 pr-4 py-1.5 rounded-lg text-xs text-slate-800 placeholder-slate-400 transition-all">
+                        class="search-topbar w-full pl-9 pr-4 py-1.5 rounded-lg text-xs transition-all">
                 </form>
             </div>
 
@@ -456,18 +600,18 @@
             <div class="flex items-center gap-3">
                 <!-- Status Badge -->
                 <div class="live-badge flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold">
-                    <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
                     <span>Live Monitoring</span>
                 </div>
 
                 <!-- User Profile -->
-                <div class="flex items-center gap-2.5 pl-3 border-l border-teal-200/60">
-                    <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-xs border border-teal-200 shadow-sm">
+                <div class="flex items-center gap-2.5 pl-3 border-l border-teal-700/40">
+                    <div class="w-8 h-8 rounded-full bg-teal-500/20 text-teal-300 font-bold flex items-center justify-center text-xs border border-teal-500/40 shadow-sm">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </div>
                     <div class="hidden sm:block text-left">
-                        <div class="text-xs font-semibold text-slate-800 leading-tight">{{ Auth::user()->name }}</div>
-                        <div class="text-[10px] text-teal-600 font-bold uppercase">{{ Auth::user()->role }}</div>
+                        <div class="text-xs font-semibold text-slate-200 leading-tight">{{ Auth::user()->name }}</div>
+                        <div class="text-[10px] text-teal-400 font-bold uppercase">{{ Auth::user()->role }}</div>
                     </div>
                 </div>
             </div>
@@ -477,25 +621,25 @@
         @if(session('success'))
         <div class="mx-6 mt-4 p-3 rounded-lg flash-success border text-xs flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
                 <span>{{ session('success') }}</span>
             </div>
-            <button onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-800"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+            <button onclick="this.parentElement.remove()"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
         </div>
         @endif
 
         @if(session('warning'))
-        <div class="mx-6 mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between">
+        <div class="mx-6 mt-4 p-3 rounded-lg flash-warning border text-xs flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                 <span>{{ session('warning') }}</span>
             </div>
-            <button onclick="this.parentElement.remove()" class="text-amber-500 hover:text-amber-700"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+            <button onclick="this.parentElement.remove()"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
         </div>
         @endif
 
         @if($errors->any())
-        <div class="mx-6 mt-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs">
+        <div class="mx-6 mt-4 p-3 rounded-lg flash-error border text-xs">
             <ul class="list-disc list-inside space-y-0.5 text-xs">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
