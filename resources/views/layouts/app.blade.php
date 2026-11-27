@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full text-slate-800">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -103,22 +103,150 @@
         /* Semua konten di atas canvas */
         body > * { position: relative; z-index: 1; }
 
-        /* Clean corporate scrollbar */
+        /* ── Scrollbar: teal-tinted ── */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-track { background: rgba(13,148,136,0.06); }
+        ::-webkit-scrollbar-thumb { background: rgba(20,184,166,0.30); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(20,184,166,0.55); }
 
-        /* Leaflet Interactive Map Dragging & Pan */
-        .leaflet-container {
-            cursor: grab !important;
-        }
+        /* ── Leaflet map cursor ── */
+        .leaflet-container { cursor: grab !important; }
         .leaflet-container:active,
         .leaflet-dragging,
         .leaflet-dragging .leaflet-grab,
-        .leaflet-dragging .leaflet-interactive {
-            cursor: grabbing !important;
+        .leaflet-dragging .leaflet-interactive { cursor: grabbing !important; }
+
+        /* ══════════════════════════════════════════
+           GLOBAL DARK-TEAL THEME OVERRIDES
+           Kartu, tabel, form, badge — semua selaras
+        ══════════════════════════════════════════ */
+
+        /* Base text */
+        body { color: #0f2d2b; }
+
+        /* ── Topbar ── */
+        header.topbar {
+            background: rgba(255,255,255,0.78);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(13,148,136,0.18);
+            box-shadow: 0 1px 12px rgba(13,148,136,0.08);
         }
+
+        /* ── White cards → glass teal ── */
+        .bg-white {
+            background: rgba(255,255,255,0.72) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* ── Stat cards border glow ── */
+        .border-slate-200,
+        .border-slate-200\/90 {
+            border-color: rgba(13,148,136,0.18) !important;
+        }
+
+        /* ── Tables ── */
+        table { border-collapse: separate; border-spacing: 0; }
+        thead th {
+            background: rgba(13,148,136,0.09) !important;
+            color: #0f766e !important;
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(13,148,136,0.18) !important;
+        }
+        tbody tr {
+            background: rgba(255,255,255,0.65) !important;
+            transition: background 0.15s;
+        }
+        tbody tr:hover { background: rgba(20,184,166,0.08) !important; }
+        tbody td {
+            border-bottom: 1px solid rgba(13,148,136,0.09) !important;
+            color: #134e4a;
+        }
+
+        /* ── Form inputs ── */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="search"],
+        input[type="date"],
+        select,
+        textarea {
+            background: rgba(255,255,255,0.75) !important;
+            border-color: rgba(13,148,136,0.22) !important;
+            color: #0f2d2b !important;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: rgba(13,148,136,0.55) !important;
+            box-shadow: 0 0 0 3px rgba(20,184,166,0.12) !important;
+            outline: none !important;
+        }
+
+        /* ── Badges & pills (slate) → teal ── */
+        .bg-slate-100 { background: rgba(20,184,166,0.10) !important; }
+        .text-slate-600 { color: #0f766e !important; }
+        .text-slate-500 { color: #0d9488 !important; }
+        .text-slate-700 { color: #0f2d2b !important; }
+        .text-slate-800 { color: #0a1e1d !important; }
+        .text-slate-900 { color: #071615 !important; }
+
+        /* ── Flash notifications ── */
+        .flash-success {
+            background: rgba(16,185,129,0.10);
+            border-color: rgba(16,185,129,0.28);
+            color: #065f46;
+        }
+        .flash-warning {
+            background: rgba(245,158,11,0.10);
+            border-color: rgba(245,158,11,0.28);
+            color: #78350f;
+        }
+        .flash-error {
+            background: rgba(239,68,68,0.10);
+            border-color: rgba(239,68,68,0.28);
+            color: #7f1d1d;
+        }
+
+        /* ── Buttons: primary teal glow ── */
+        .btn-teal,
+        button[type="submit"]:not(.no-style),
+        a.btn-primary {
+            transition: box-shadow 0.2s, transform 0.15s;
+        }
+        .bg-teal-600:hover, .bg-teal-500:hover {
+            box-shadow: 0 4px 18px rgba(20,184,166,0.35);
+        }
+
+        /* ── Page section headings ── */
+        h1, h2, h3 { color: #0a1e1d; }
+
+        /* ── Rounded panels / section boxes ── */
+        .rounded-xl, .rounded-2xl {
+            box-shadow: 0 2px 16px rgba(13,148,136,0.07);
+        }
+
+        /* ── Live Monitoring badge ── */
+        .live-badge {
+            background: rgba(20,184,166,0.12);
+            border: 1px solid rgba(20,184,166,0.30);
+            color: #0f766e;
+        }
+
+        /* ── Topbar search ── */
+        .search-topbar {
+            background: rgba(255,255,255,0.65) !important;
+            border: 1px solid rgba(13,148,136,0.22) !important;
+        }
+        .search-topbar:focus {
+            background: rgba(255,255,255,0.90) !important;
+            border-color: rgba(13,148,136,0.50) !important;
+        }
+
+        /* ── Main scrollable area subtle tint ── */
+        main { background: transparent; }
     </style>
 </head>
 <body class="h-full flex overflow-hidden main-bg">
@@ -314,32 +442,32 @@
     <!-- MAIN BODY WRAPPER -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <!-- TOPBAR (Clean Medical Enterprise Header) -->
-        <header class="h-16 bg-white border-b border-slate-200/90 px-6 flex items-center justify-between shrink-0 z-10 shadow-xs">
+        <header class="topbar h-16 px-6 flex items-center justify-between shrink-0 z-10">
             <!-- Search Input -->
             <div class="flex items-center gap-4 flex-1 max-w-md">
                 <form action="{{ route('shipments.index') }}" method="GET" class="w-full relative">
-                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-                    <input type="text" name="search" placeholder="Cari resi, kurir, rute..." 
-                        class="w-full pl-9 pr-4 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:bg-white transition-all">
+                    <i data-lucide="search" class="w-4 h-4 text-teal-500/60 absolute left-3 top-2.5"></i>
+                    <input type="text" name="search" placeholder="Cari resi, kurir, rute..."
+                        class="search-topbar w-full pl-9 pr-4 py-1.5 rounded-lg text-xs text-slate-800 placeholder-slate-400 transition-all">
                 </form>
             </div>
 
             <!-- Right Controls: Telemetry Badge, Notifications & Profile -->
             <div class="flex items-center gap-3">
                 <!-- Status Badge -->
-                <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-xs font-semibold text-teal-800">
+                <div class="live-badge flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold">
                     <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
                     <span>Live Monitoring</span>
                 </div>
 
                 <!-- User Profile -->
-                <div class="flex items-center gap-2.5 pl-3 border-l border-slate-200">
-                    <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs border border-teal-200 shadow-xs">
+                <div class="flex items-center gap-2.5 pl-3 border-l border-teal-200/60">
+                    <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-xs border border-teal-200 shadow-sm">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </div>
                     <div class="hidden sm:block text-left">
-                        <div class="text-xs font-semibold text-slate-900 leading-tight">{{ Auth::user()->name }}</div>
-                        <div class="text-[10px] text-teal-700 font-bold uppercase">{{ Auth::user()->role }}</div>
+                        <div class="text-xs font-semibold text-slate-800 leading-tight">{{ Auth::user()->name }}</div>
+                        <div class="text-[10px] text-teal-600 font-bold uppercase">{{ Auth::user()->role }}</div>
                     </div>
                 </div>
             </div>
@@ -347,12 +475,12 @@
 
         <!-- FLASH NOTIFICATIONS -->
         @if(session('success'))
-        <div class="mx-6 mt-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+        <div class="mx-6 mt-4 p-3 rounded-lg flash-success border text-xs flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
                 <span>{{ session('success') }}</span>
             </div>
-            <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+            <button onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-800"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
         </div>
         @endif
 
