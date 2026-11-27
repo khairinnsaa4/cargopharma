@@ -679,7 +679,19 @@
         const destLat = shipmentData.destination.lat;
         const destLng = shipmentData.destination.lng;
 
-        // Tile Layers
+        // Tile Layers (High-resolution Satellite Hybrid with clean boundaries & labels)
+        const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 18,
+            attribution: 'Tiles &copy; Esri &mdash; Satellite'
+        });
+
+        const esriLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 18,
+            attribution: 'Labels &copy; Esri'
+        });
+
+        const satelliteHybrid = L.layerGroup([esriSatellite, esriLabels]);
+
         const osmStreet = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
@@ -688,11 +700,6 @@
         const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
             attribution: 'Tiles &copy; Esri'
-        });
-
-        const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 18,
-            attribution: 'Tiles &copy; Esri &mdash; Satellite'
         });
 
         const map = L.map('shipment-map', {
@@ -706,7 +713,7 @@
             tap: false,
             keyboard: true,
             inertia: true,
-            layers: [osmStreet]
+            layers: [satelliteHybrid]
         });
 
         map.dragging.enable();
@@ -719,9 +726,10 @@
         };
 
         L.control.layers({
-            "OpenStreetMap": osmStreet,
-            "Esri Street": esriStreet,
-            "Satellite": esriSatellite
+            "🛰️ Satelit Rapi (Hybrid)": satelliteHybrid,
+            "🌍 Satelit Murni": esriSatellite,
+            "🗺️ Peta Jalan (OSM)": osmStreet,
+            "📍 Esri Street": esriStreet
         }, null, { position: 'topright' }).addTo(map);
 
         // Force invalidation to avoid blank white canvas

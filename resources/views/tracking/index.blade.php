@@ -515,7 +515,19 @@
     };
 
     document.addEventListener("DOMContentLoaded", function () {
-        // High-Quality Tile Basemaps
+        // High-Quality Satellite Hybrid Basemap (Crisp Boundaries & Labels)
+        const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 18,
+            attribution: 'Tiles &copy; Esri &mdash; Satellite'
+        });
+
+        const esriLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 18,
+            attribution: 'Labels &copy; Esri'
+        });
+
+        const satelliteHybrid = L.layerGroup([esriSatellite, esriLabels]);
+
         const osmStreet = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
@@ -526,15 +538,10 @@
             attribution: 'Tiles &copy; Esri'
         });
 
-        const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 18,
-            attribution: 'Tiles &copy; Esri &mdash; Satellite'
-        });
-
         map = L.map('full-tracking-map', {
             center: [15.0, 55.0],
             zoom: 3,
-            layers: [osmStreet],
+            layers: [satelliteHybrid],
             dragging: true,
             touchZoom: true,
             scrollWheelZoom: true,
@@ -562,9 +569,10 @@
         };
 
         L.control.layers({
-            "Peta Jalan (OSM)": osmStreet,
-            "Esri Street Map": esriStreet,
-            "Satelit (Esri)": esriSatellite
+            "🛰️ Satelit Rapi (Hybrid)": satelliteHybrid,
+            "🌍 Satelit Murni": esriSatellite,
+            "🗺️ Peta Jalan (OSM)": osmStreet,
+            "📍 Esri Street Map": esriStreet
         }, null, { position: 'topright' }).addTo(map);
 
         setTimeout(() => { map.invalidateSize(); }, 250);

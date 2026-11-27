@@ -883,10 +883,15 @@
         weatherMap.dragging.enable();
         if (weatherMap.keyboard) weatherMap.keyboard.enable();
 
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(weatherMap);
+            attribution: 'Tiles &copy; Esri'
+        });
+        const esriLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 18,
+            attribution: 'Labels &copy; Esri'
+        });
+        L.layerGroup([esriSatellite, esriLabels]).addTo(weatherMap);
 
         setTimeout(() => { weatherMap.invalidateSize(); }, 300);
         window.addEventListener('resize', () => { weatherMap.invalidateSize(); });
